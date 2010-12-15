@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- JNLP File for Integrated Data Viewer -->
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/idv/current/webstart/" href="IDV/idv.jnlp">
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/idv/current/webstart/">
   <information>
     <title>Integrated Data Viewer 2.9 u1</title>
     <vendor>Unidata</vendor>
@@ -17,6 +17,7 @@
     <jar href="IDV/idv.jar"/>
     <extension name="IDV Base" href="IDV/idvbase.jnlp"/>
   </resources>
+
   <resources os="Linux">
     <property name="j3d.sharedctx" value="false"/>
   </resources>
@@ -28,7 +29,6 @@
     <argument>14445</argument>
   </application-desc>
 
-  <application-desc main-class="ucar.unidata.idv.DefaultIdv"/>
   <security>
     <all-permissions/>
   </security>
