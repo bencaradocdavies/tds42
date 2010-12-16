@@ -5,7 +5,7 @@ Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2.2 (2010-12-16)
-   Fold in ncWMS PixelMap fix
+   Fold in ncWMS PixelMap fix (TDS-147)
    Fix problem where TDS running in Tomcat 5.5 throws errors on WMS requests: NoClassDefFoundError for ClientAbortException (TDS-146).
    Fix idv, toolsui jnlp files for viewer links
 
