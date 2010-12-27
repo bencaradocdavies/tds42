@@ -79,7 +79,7 @@ public class LocalCatalogRequestValidator implements Validator
                        "The \"path\" field must end in \".html\"." );
       else if ( ! this.htmlView && ! path.endsWith( ".xml"))
         e.rejectValue( "path", "path.notXmlRequest",
-                       "The \"path\" field must end in \".xml\"." );
+                       "The \"path\" field [" + path + "] must end in \".xml\"." );
     }
 
     // Validate "command" - not empty
