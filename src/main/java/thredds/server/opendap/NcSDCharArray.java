@@ -38,7 +38,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 
 import opendap.dap.*;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 
 import java.io.IOException;
 import java.io.EOFException;
@@ -63,10 +63,10 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
    * @param v : netcdf Variable
    */
   NcSDCharArray(Variable v) {
-    super(NcDDS.escapeName(v.getShortName()));
+      super((v.getShortName()));
     this.ncVar = v;
     if (v.getRank() < 1)
-      throw new IllegalArgumentException("NcSDCharArray: rank must be > 1, var = " + v.getName());
+      throw new IllegalArgumentException("NcSDCharArray: rank must be > 1, var = " + v.getFullName());
 
     // set dimensions, eliminate last one
     List dims = v.getDimensions();
@@ -101,10 +101,10 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
     try {
 
       if (debugRead) {
-        System.out.println("NcSDCharArray read " + ncVar.getName());
+        System.out.println("NcSDCharArray read " + ncVar.getFullName());
         for (int i = 0; i < numDimensions(); i++) {
           DArrayDimension d = getDimension(i);
-          System.out.println(" " + d.getName() + " " + getStart(i) + " " + getStop(i) + " " + getStride(i));
+          System.out.println(" " + d.getEncodedName() + " " + getStart(i) + " " + getStop(i) + " " + getStride(i));
         }
       }
 
@@ -139,9 +139,9 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
         if (debugRead) System.out.println("   section size " + a.getSize());
       }
 
-    } catch (InvalidParameterException e) {
+    } catch (InvalidDimensionException e) {
       log.error("read char array", e);
-      throw new IllegalStateException("NcSDCharArray InvalidParameterException");
+      throw new IllegalStateException("NcSDCharArray InvalidDimensionException");
     } catch (InvalidRangeException e) {
       log.error("read char array", e);
       throw new IllegalStateException("NcSDCharArray InvalidRangeException");

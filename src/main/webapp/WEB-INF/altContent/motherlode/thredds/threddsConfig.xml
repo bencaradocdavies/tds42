@@ -99,13 +99,6 @@
     <scour>10 min</scour>
   </HTTPFileCache>
 
-  <CdmValidatorService>
-    <allow>true</allow>
-    <maxFileUploadSize>1 Gb</maxFileUploadSize>
-    <scour>24 hours</scour>
-    <maxAge>30 days</maxAge>
-  </CdmValidatorService>
-
   <NetcdfSubsetService>
     <allow>true</allow>
     <scour>15 min</scour>
@@ -127,6 +120,12 @@
     <maxImageHeight>5000</maxImageHeight>
   </WMS>
 
+  <NCISO>
+    <ncmlAllow>true</ncmlAllow>
+    <uddcAllow>true</uddcAllow>
+    <isoAllow>true</isoAllow>
+  </NCISO>
+
   <!-- Enable CatalogGen service.
    -->
   <CatalogGen>
@@ -147,10 +146,6 @@
   </DqcService>
 
   <!-- Viewer>my.package.MyViewer</Viewer -->
-
-  <FmrcInventory>
-    <openType>XML_ONLY</openType>
-  </FmrcInventory>
 
   <!-- nj22Config
     <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>

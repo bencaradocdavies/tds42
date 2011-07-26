@@ -41,10 +41,10 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.net.URL;
 
+import ucar.unidata.util.EscapeStrings;
 import thredds.catalog.*;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.catalog.query.*;
-import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 import thredds.dqc.server.DqcHandler;
 import ucar.nc2.constants.FeatureType;
@@ -55,11 +55,8 @@ import ucar.nc2.constants.FeatureType;
  * @author edavis
  * @since Sep 21, 2005 9:12:56 PM
  */
-public class LatestDqcHandler extends DqcHandler
-
-{
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( LatestDqcHandler.class );
+public class LatestDqcHandler extends DqcHandler {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( LatestDqcHandler.class );
 
   protected LatestConfig config;
 
@@ -105,19 +102,19 @@ public class LatestDqcHandler extends DqcHandler
     if ( extraPath.length() > 0 )
     {
       String tmpMsg = "Extra path information <" + extraPath + "> not understood.";
-      log.error( "handleRequest(): " + tmpMsg );
+      //log.info( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_BAD_REQUEST, tmpMsg );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
       return;
     }
 
     // Determine what LatestConfig.Item was requested.
-    String reqItemId = req.getQueryString();
+    String reqItemId = EscapeStrings.unescapeOGC(req.getQueryString());
     if ( reqItemId == null )
     {
       // No LatestConfig.Item ID was given in request.
       String tmpMsg = "No latest request ID given.";
-      log.info( "handleRequest(): " + tmpMsg );
+      //log.info( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND,
                      "LatestDqcHandler.handleRequest(): " + tmpMsg );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
@@ -130,7 +127,7 @@ public class LatestDqcHandler extends DqcHandler
     if ( reqItem == null )
     {
       String tmpMsg = "The Item requested, " + reqItemId + ", is not supported.";
-      log.error( "handleRequest(): " + tmpMsg );
+      //log.error( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND,
                      "LatestDqcHandler.handleRequest(): " + tmpMsg );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
@@ -185,7 +182,7 @@ public class LatestDqcHandler extends DqcHandler
     {
       // The requested Item is not available. Return an error.
       String tmpMsg = "No latest dataset found for request<" + reqItemId + ">.";
-      log.error( "handleRequest(): " + tmpMsg );
+      //log.error( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
       return;

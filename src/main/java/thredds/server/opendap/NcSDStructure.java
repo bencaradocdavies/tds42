@@ -33,7 +33,7 @@
  */
 package thredds.server.opendap;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.BaseType;
 import opendap.dap.NoSuchVariableException;
 
@@ -66,7 +66,8 @@ public class NcSDStructure extends SDStructure  {
    *  @param list of the member variables
    */
   public NcSDStructure( Structure s, List<BaseType> list) {
-    super( NcDDS.escapeName(s.getShortName()));
+      //super( NcDDS.escapeName(s.getShortName()));
+      super((s.getShortName()));
     this.ncVar = s;
 
     for (BaseType aList : list) addVariable(aList, 0);
@@ -74,7 +75,7 @@ public class NcSDStructure extends SDStructure  {
   }
 
   public NcSDStructure( NcSDStructure org, StructureData sdata) {
-    super( org.getName());
+    super( org.getEncodedName());
     this.org = org;
     this.sdata = sdata;
   }

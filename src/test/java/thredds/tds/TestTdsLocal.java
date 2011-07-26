@@ -36,6 +36,7 @@ import junit.framework.*;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalogFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.thredds.ThreddsDataFactory;
 
 /**
  * TestSuite that runs all the sample tests for testing the TDS on localhost.
@@ -78,11 +79,15 @@ public class TestTdsLocal extends TestCase {
 
   public static junit.framework.Test suite ( ) {
     DODSNetcdfFile.debugServerCall = true;
+    //ThreddsDataFactory.setPreferCdm(false); // test dods !!
 
     TestSuite suite= new TestSuite();
+    suite.addTest(new TestSuite(TestCdmRemoteServer.class));
     suite.addTest(new TestSuite(TestTdsDodsServer.class));
     suite.addTest(new TestSuite(TestTdsNcml.class));
     suite.addTest(new TestSuite(TestTdsDatasetScan.class));
+    suite.addTest(new TestSuite(TestTdsFmrc.class));
+    suite.addTest(new TestSuite(TestWaveModel.class));
     //suite.addTest(new TestSuite(TestTdsNetcdfSubsetService.class));
     //suite.addTest(new TestSuite(TestTdsWxs.class));
 

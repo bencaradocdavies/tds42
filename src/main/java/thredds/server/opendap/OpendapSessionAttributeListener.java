@@ -32,6 +32,8 @@
  */
 package thredds.server.opendap;
 
+import opendap.servlet.GuardedDataset;
+
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingEvent;
 
@@ -41,8 +43,8 @@ public class OpendapSessionAttributeListener implements HttpSessionAttributeList
    // HttpSessionAttributeListener
     public void attributeRemoved(HttpSessionBindingEvent e) {
 
-      if (e.getValue() instanceof GuardedDatasetImpl) {
-        GuardedDatasetImpl gdataset = (GuardedDatasetImpl) e.getValue();
+      if (e.getValue() instanceof GuardedDataset) {
+        GuardedDataset gdataset = (GuardedDataset) e.getValue();
         gdataset.close();
         //System.out.printf(" close gdataset %s in session %s %n", gdataset, e.getSession().getId());
         if (log.isDebugEnabled()) log.debug(" close gdataset " + gdataset + " in session " + e.getSession().getId());

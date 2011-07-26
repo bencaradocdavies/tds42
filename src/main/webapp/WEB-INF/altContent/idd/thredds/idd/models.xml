@@ -11,6 +11,9 @@
     <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
     <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
   </service>
 
   <dataset name="NCEP Model Data">
@@ -18,7 +21,7 @@
     <metadata inherited="true">
       <serviceName>fmrcServices</serviceName>
       <authority>edu.ucar.unidata</authority>
-      <dataType>Grid</dataType>
+      <dataType>GRID</dataType>
       <dataFormat>GRIB-1</dataFormat>
       <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html"
                      xlink:title="NCEP Model documentation"/>
@@ -221,16 +224,60 @@
       <featureCollection name="NCEP-GFS-N_Hemisphere_381km" featureType="FMRC" harvest="true"
                          path="fmrc/NCEP/GFS/N_Hemisphere_381km">
         <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemisphere (polar stereographic).
-            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
             Horizontal = 65 by 65 points, resolution 381.0 km, Polar Stereographic projection.
             Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
           </documentation>
         </metadata>
 
         <collection
-            spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm#.grib1"
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km_grib2/GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm#.grib2"
             name="GFS_N_Hemisphere_381km"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+      <featureCollection name="NCEP-GFS-Pacific_40km" featureType="FMRC" harvest="true"
+                         path="fmrc/NCEP/GFS/Pacific_40km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
+          <documentation type="summary">NCEP GFS Model : Mercator Grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
+            Horizontal = 300 by 369 points, resolution 40 km, Mercator projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (29 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/Pacific_40km/GFS_Pacific_40km_#yyyyMMdd_HHmm#.grib2"
+            name="GFS_Pacific_40km"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+      <featureCollection name="NCEP-GFS-Puerto_Rico_0p5deg" featureType="FMRC" harvest="true"
+                         path="fmrc/NCEP/GFS/Puerto_Rico_0p5deg">
+        <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
+          <documentation type="summary">NCEP GFS Model : 
+            Puerto_Rico 0.5 degree Lat/Lon grid.
+            Model runs are made at 0, 6, 12, 18 hours out to 10 days.
+            Horizontal = 102 by 107 points, resolution .5 degree, Lat/Lon projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (29 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_0p5deg/GFS_Puerto_Rico_0p5deg_#yyyyMMdd_HHmm#.grib2"
+            name="GFS_Puerto_Rico_0p5deg"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -562,6 +609,26 @@
         <dataFormat>GRIB-2</dataFormat>
       </metadata>
 
+      <featureCollection name="NCEP-RUC2-CONUS_13km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC2/CONUS_13km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
+          <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC2).
+            Model runs are made hourly, with analysis and hourly forecasts out to 12 hours; on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs. The other forecast are out to 9 hours.
+            Horizontal = 337 by 451 points, resolution 13.55 km, LambertConformal projection.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_13km/RUC2_CONUS_13km_#yyyyMMdd_HHmm#.grib2"
+            name="RUC2_CONUS_13km"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
       <dataset ID="FMRC/NCEP/RUC2" name="NCEP-RUC2-CONUS_20km">
         <metadata inherited="true">
           <documentation type="summary">NCEP Rapid Update Cycle 2 (RUC2).
@@ -669,6 +736,7 @@
 
     <dataset ID="FMRC/NCEP/DGEX" name="Downscaled GFS with Eta Extension (DGEX)">
       <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
         <documentation type="summary">
           The NCEP DGEX Model is the Eta model extended to 8 days over smaller domains using the operational Eta model
           78 hour forecast and GFS boundary conditions.
@@ -872,8 +940,61 @@
 
       </dataset>
 
+    <dataset ID="FMRC/NCEP/RTMA" name="NCEP Real Time Mesoscale Analysis (RTMA)">
+      <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
+        <documentation type="summary">
+          The NCEP RTMA Model is Real Time Mesoscale Analysis models.
+        </documentation>
+        <documentation xlink:href="http://www.weather.gov/infoservicechanges/tin08-56_rtma.txt"
+                       xlink:title="RTMA TIN"/>
+        <documentation xlink:href="http://www.coaps.fsu.edu/~dvandyke/wrfarw/rtma.html"
+                       xlink:title="COAPS FSU"/>
+      </metadata>
+
+      <featureCollection name="NCEP-RTMA-CONUS_2p5km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RTMA/CONUS_2p5km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
+           <documentation type="summary">
+            NCEP Model horizontal = 1377 by 2145 points, resolution 2.5 km, LambertConformal projection.
+            Model runs are made hourly, with 0 hour forecast
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RTMA/CONUS_2p5km/RTMA_CONUS_2p5km_#yyyyMMdd_HHmm#.grib2"
+            name="RTMA_CONUS_2p5km"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+      <featureCollection name="NCEP-RTMA-GUAM_2p5km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RTMA/GUAM_2p5km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
+          <documentation type="summary">
+            NCEP Model horizontal = 193 by 193 points, resolution 2.5 km, Mercator projection.
+            Model runs are made every 3 hours at 0, 3, ... with 0 hour forecasts.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RTMA/GUAM_2p5km/RTMA_GUAM_2p5km_#yyyyMMdd_HHmm#.grib2"
+            name="RTMA_GUAM_2p5km"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+    </dataset>
+
     <dataset ID="FMRC/NCEP/SREF" name="NCEP Short Range Ensemble Forecasting (SREF)">
       <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
         <documentation type="summary">NCEP Short Range Ensemble Forecast (SREF)</documentation>
         <documentation xlink:href="http://w1.spc.woc.noaa.gov/exper/sref/" xlink:title="NCEP/SREF Website"/>
         <documentation xlink:href="http://www.emc.ncep.noaa.gov/mmb/SREF/SREF.html" xlink:title="NWS/SREF Website"/>
@@ -1011,7 +1132,7 @@
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
-      <featureCollection name="NCEP-SREF-PacificNE-ensprod" featureType="FMRC" harvest="true" path="fmrc/NCEP/SREF/PacificNE_0p4/ensprod">
+      <featureCollection name="NCEP-SREF-PacificNE_0p4-ensprod" featureType="FMRC" harvest="true" path="fmrc/NCEP/SREF/PacificNE_0p4/ensprod">
         <metadata inherited="true">
           <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">
@@ -1103,6 +1224,54 @@
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection -->
+    </dataset>
+
+    <dataset ID="FMRC/NCEP/SST" name="NCEP Sea Surface Temperature">
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Sea Surface Temperature (SST): US National Weather Service gridded forecasts of sensible weather elements. </documentation>
+        <documentation xlink:href="http://en.wikipedia.org/wiki/Sea_surface_temperature" xlink:title="Wikipedia" />
+        <dataFormat>GRIB-1</dataFormat>
+      </metadata>
+
+      <featureCollection name="NCEP-SST-Global_2x2deg" featureType="FMRC" harvest="true" path="fmrc/NCEP/SST/Global_2x2deg">
+         <metadata inherited="true">
+           <dataFormat>Netcdf</dataFormat>
+           <documentation type="summary">
+             91 by 181 points. Models are run daily at 0Z.
+             Forecasts at 0 hour.
+           </documentation>
+         </metadata>
+
+         <collection
+             spec="/data/ldm/pub/decoded/netcdf/grid/NCEP/SST/Global_2x2deg/SST_Global_2x2deg_#yyyyMMdd_HHmm#.nc"
+             name="SST_Global_2x2deg"
+             recheckAfter="15 min"
+             olderThan="5 min"/>
+         <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+       </featureCollection>
+
+      <featureCollection name="NCEP-SST-Global_5x2p5deg" featureType="FMRC" harvest="true" path="fmrc/NCEP/SST/Global_5x2p5deg">
+         <metadata inherited="true">
+           <dataFormat>Netcdf</dataFormat>
+           <documentation type="summary">
+             73 by 73 points. Models are run daily at 0Z.
+             Forecasts at 0 hour.
+           </documentation>
+         </metadata>
+
+         <collection
+             spec="/data/ldm/pub/decoded/netcdf/grid/NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_#yyyyMMdd_HHmm#.nc"
+             name="SST_Global_5x2p5deg"
+             recheckAfter="15 min"
+             olderThan="5 min"/>
+         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+       </featureCollection>
+
     </dataset>
 
     <dataset ID="FMRC/NCEP/WW3" name="NCEP Wave Watch III">

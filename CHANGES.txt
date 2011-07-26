@@ -4,10 +4,65 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2.8 (2011-07-20)
+  CollectionUpdater- use config.name, not config.spec for Job, Task names
+  upgrade to NcISO 1.2
+  OPeNDAP: escape "./"
+  CdmRemoteController was looking for ":" instead of "," separating variable names
+  FmrcController now uses separate xslt for point datasets
+  motherlode PointCollectionFeatures are Points, except for metars
+  Allow setting size of BDB cache
+  Remove InvCatalogFactory reference from InvCatalog
+  Allow static catalogs to not be cached.
+  Remove Upper Air Point Data - its station profile data - delay until 4.3
+
+ 4.2.7 (2011-05-20)
+   Remove empty NCEP-GFS-N_Hemisphere_381km datasets from mlode catalog
+   Enable MetadataManager so old files get deleted
+   Remove testData2.nc from test server, replace with testData2.grib2
+   Fix jnlp files, remove href.
+   Fix for WMS on a F-TDS virtual datasets throws a NullPointerException (TDS-172).
+   NCSS point requests on curvilinear grids sometimes throw ArrayIndexOutOfBoundsExceptions (TDS-173).
+
+ 4.2.6 (2011-04-13)
+   Add CRS definitions to EPSG CRS WKT database (epsg.properties) for 3857, 3408, and 3409 (TDS-166).
+   Fix tds/build.xml to directly reference catalina-ant.jar for Catalina deploy tasks (TDS-165).
+   Fix TDS NCSS service so HTML form does not hardcode "/thredds" as the context path (TDS-167).
+
+ 4.2.5 (2011-03-02)
+   various opendap problems are fixed
+   opendap ESG access control
+
+ 4.2.4 (2011-02-18)
+   fix context path usage in InvDatasetFeatureCollection (TDS-144)
+   ThreddsConfig uses serverStartup log
+   Add latest ncISO to TDS distribution and update IDD and motherlode catalogs with ncISO services (TDS-159)
+   Fix Godiva2 "permalink" and "email" links so they include dataset URL in "dataset" parameter (TDS-134)
+   Add projection EPSG:3857 (used by GoogleMaps) to default CRS list used in WMS GetCapabilities documents (TDS-157)
+   static catalogs: google search intitle:TdsStaticCatalog
+   HTTPClient refactor / framework
+   opendap bison parser
+   Point FeatureCollection adds metadata to catalog
+   sync bdb from TDS admin/debug
+   remote fmrc collections
+   ncss validate time range better
+   ncss bug when time subsetting FMRC datasets - time_run axis was not getting subsetted.
+   TomcatAuthorizer is appending "auth" to redirected URL, not sure why but it breaks opendap
+   GridServlet (ncss) traps Throwable, not just Exception
+   tom kunicki's patch on CdmrFeatureController
+   change 404.jsp 500.jsp from 4.0 to 4.2
+   GridCoordSys.getDateRange() now works for 2D time coord: WCS failed on FMRC 2D dataset
+   MetadataManager.closeAll() bug
+   fix default cache dir for WCS, ncss
+   FMRC bug in constant offset datasets when offset didnt start at 0.
+   FMRC now has vars, bounding box, and date range metadata correct.
+   CdmrFeature service for point collections
+   InvFeatureCollection type=POINT, STATION
+
  4.2.3 (2011-01-13)
    Fix for ArrayIndexOutOfBoundsException during WMS GetFeatureInfo requests on datasets without a time dimension (TDS-152)
-   Fix for IllegalArgumentException during GetMap requests with invalid TIME values, not ISO8601 (TDS-153)
    Fix for ArrayIndexOutOfBoundsException during some WMS GetMap requests (TDS-154)
+   Fix for IllegalArgumentException during GetMap requests with invalid TIME values, not ISO8601 (TDS-153)
    Fix exception handling in WMS 1.1.1 (TDS-155)
    Fix to WriterCFPointDataset
    Fix to DateUnit

@@ -33,10 +33,11 @@
 
 package thredds.server.opendap;
 
+import opendap.dap.InvalidDimensionException;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.BaseType;
 import opendap.dap.DArrayDimension;
 import opendap.dap.PrimitiveVector;
@@ -59,7 +60,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
 
   private boolean debug = false, debugRead = false;
   private Variable ncVar = null;
-  protected BaseType elemType;
+  //ignore protected BaseType elemType;
 
   /**
    * Constructor: Wraps a netcdf variable in a DODS SDArray.
@@ -68,7 +69,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
    * @param bt : DODS element type
    */
   NcSDArray(Variable v, BaseType bt) {
-    super(NcDDS.escapeName(v.getShortName()));
+    super((v.getShortName()));
     this.ncVar = v;
 
     // set dimensions
@@ -79,7 +80,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
     // this seems to be how you set the type
     // it creates the "primitive vector"
     addVariable(bt);
-    this.elemType = bt;
+    // ignore this.elemType = bt;
   }
 
   public Variable getVariable() {
@@ -120,16 +121,16 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
       }
 
       if (debug)
-        System.out.println("  NcSDArray Read " + getName() + " " + a.getSize() + " elems of type = " + a.getElementType());
+        System.out.println("  NcSDArray Read " + getEncodedName() + " " + a.getSize() + " elems of type = " + a.getElementType());
       if (debugRead) System.out.println("  Read = " + a.getSize() + " elems of type = " + a.getElementType());
       if (log.isDebugEnabled()) {
         long tookTime = System.currentTimeMillis() - tstart;
         log.debug("NcSDArray read array: " + tookTime * .001 + " seconds");
       }
 
-    } catch (InvalidParameterException e) {
+    } catch (InvalidDimensionException e) {
       log.error(getRequestedRange(), e);
-      throw new IllegalStateException("NcSDArray InvalidParameterException=" + e.getMessage());
+      throw new IllegalStateException("NcSDArray InvalidDimensionException=" + e.getMessage());
 
     } catch (InvalidRangeException e) {
       log.error(getRequestedRange(), e);
@@ -146,14 +147,14 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
   private String getRequestedRange() {
     try {
       StringBuilder sbuff = new StringBuilder();
-      sbuff.append("NcSDArray read " + ncVar.getName());
+      sbuff.append("NcSDArray read " + ncVar.getFullName());
       for (int i = 0; i < numDimensions(); i++) {
         DArrayDimension d = getDimension(i);
-        sbuff.append(" " + d.getName() + "(" + getStart(i) + "," + getStride(i) + "," + getStop(i) + ")");
+        sbuff.append(" " + d.getEncodedName() + "(" + getStart(i) + "," + getStride(i) + "," + getStop(i) + ")");
       }
       return sbuff.toString();
 
-    } catch (InvalidParameterException e) {
+    } catch (InvalidDimensionException e) {
       e.printStackTrace();
       return e.getMessage();
     }

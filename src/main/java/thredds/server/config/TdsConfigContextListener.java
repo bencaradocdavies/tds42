@@ -39,6 +39,7 @@ import javax.servlet.ServletContextListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.Log4jWebConfigurer;
+import thredds.inventory.CollectionUpdater;
 import thredds.servlet.*;
 
 /**
@@ -76,6 +77,7 @@ public class TdsConfigContextListener implements ServletContextListener {
     // Initialize the DataRootHandler.
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
     catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
+
     catHandler.init();
     DataRootHandler.setInstance( catHandler );
     logServerStartup.info( "TdsConfigContextListener: DataRootHandler done" );
@@ -90,7 +92,7 @@ public class TdsConfigContextListener implements ServletContextListener {
 
   public void contextDestroyed( ServletContextEvent event ) {
     logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
-    DataRootHandler.getInstance().shutdown();
+    CollectionUpdater.INSTANCE.shutdown();
 
     ServletContext servletContext = event.getServletContext();
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );

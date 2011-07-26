@@ -40,7 +40,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * JMX bean
  *
  * @author caron
  * @since Apr 19, 2010
@@ -95,6 +95,10 @@ public class FmrcCacheMonitorImpl implements FmrcCacheMonitor {
 
   public void deleteCollection(String collectionName) throws Exception {
     MetadataManager.deleteCollection(collectionName);
+  }
+
+  public void sync() {
+    MetadataManager.sync();
   }
 
 

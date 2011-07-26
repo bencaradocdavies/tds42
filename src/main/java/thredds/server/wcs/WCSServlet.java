@@ -74,7 +74,7 @@ public class WCSServlet extends AbstractServlet {
     super.init();
 
     allow = ThreddsConfig.getBoolean("WCS.allow", false);
-    logServerStartup.error("WCS:allow= "+allow);
+    logServerStartup.info("WCS:allow= "+allow);
     if ( ! allow )
     {
       logServerStartup.info( "WCS service not enabled in threddsConfig.xml: " + UsageLog.closingMessageNonRequestContext() );
@@ -83,7 +83,7 @@ public class WCSServlet extends AbstractServlet {
     allowRemote = ThreddsConfig.getBoolean( "WCS.allowRemote", false );
     deleteImmediately = ThreddsConfig.getBoolean( "WCS.deleteImmediately", deleteImmediately);
     maxFileDownloadSize = ThreddsConfig.getBytes("WCS.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
-    String cache = ThreddsConfig.get("WCS.dir", contentPath + "/cache/wcs/");
+    String cache = ThreddsConfig.get("WCS.dir", ServletUtil.getContentPath() + "cache/wcs/");
     File cacheDir = new File(cache);
     cacheDir.mkdirs();
 

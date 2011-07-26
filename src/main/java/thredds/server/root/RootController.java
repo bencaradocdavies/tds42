@@ -73,7 +73,8 @@ public class RootController extends AbstractController implements LastModified
     {
       String newPath = tdsContext.getContextPath() + "/catalog.html";
       res.sendRedirect( newPath );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FOUND, -1 ) );
+      log.info( "handleRequestInternal(): "
+                + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FOUND, -1 ) );
       return null;
     }
 

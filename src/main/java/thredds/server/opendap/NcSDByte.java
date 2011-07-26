@@ -34,7 +34,7 @@
 
 package thredds.server.opendap;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -56,8 +56,8 @@ public class NcSDByte extends SDByte implements HasNetcdfVariable {
    * @param ncVar : the netcdf Variable
    */
   NcSDByte(Variable ncVar) {
-    super(NcDDS.escapeName(ncVar.getShortName()));
-    this.ncVar = ncVar;
+      super((ncVar.getShortName()));
+      this.ncVar = ncVar;
   }
 
   public Variable getVariable() { return ncVar; }

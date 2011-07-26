@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Random;
 
+import ucar.nc2.units.DateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridDatasetInfo;
@@ -64,14 +65,38 @@ public class GridServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 diskCache = null;
   private boolean allow = false, debug = false;
 
-  // must end with "/"
+  static private String context = "/thredds";
+  static public void setContextPath( String c ) {
+    context = c;
+  }
+  protected String getContextPath() {
+    return context;
+  }
+
+  static private String servletPath = "/ncss/grid";
+  static public void setServletPath( String path ) {
+    servletPath = path;
+  }
+  protected String buildDatasetUrl( String path) {
+    return context + servletPath + "/" + path;
+  }
+
+  static private String servletCachePath = "/ncServer/cache";
+  static public void setServletCachePath( String path ) {
+    servletCachePath = path;
+  }
+
+  protected String buildCacheUrl( String path ) {
+    return context + servletCachePath + "/" + path;
+  }
+
+    // must end with "/"
   protected String getPath() {
-    return "ncss/grid/";
+    return servletPath.substring( 1) + "/"; // strip off leading "/" and add trailing "/"
   }
 
   protected void makeDebugActions() {
   }
-
 
   public void init() throws ServletException {
     super.init();
@@ -87,7 +112,7 @@ public class GridServlet extends AbstractServlet {
     if (!allow) return;
 
     //maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
-    String cache = ThreddsConfig.get("NetcdfSubsetService.dir", contentPath + "/cache/ncss/");
+    String cache = ThreddsConfig.get("NetcdfSubsetService.dir", ServletUtil.getContentPath() + "cache/ncss/");
     File cacheDir = new File(cache);
     if (!cacheDir.exists())  {
       if (!cacheDir.mkdirs()) {
@@ -125,7 +150,7 @@ public class GridServlet extends AbstractServlet {
 
     String pathInfo = req.getPathInfo();
     if ( pathInfo == null ) {
-      log.info( "doGet(): Path info was null - " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0));
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError( HttpServletResponse.SC_NOT_FOUND);
       return;
     }
@@ -155,13 +180,13 @@ public class GridServlet extends AbstractServlet {
           return;
         }
         showForm(res, gds, pathInfo, wantXML, showPointForm);
-        //log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
+        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
 
       } catch (java.io.FileNotFoundException ioe) {
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
-      } catch (Exception e) {
+      } catch (Throwable e) {
         log.error("GridServlet.showForm", e);
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -323,17 +348,17 @@ public class GridServlet extends AbstractServlet {
     String cacheFilename = ncFile.getPath();
     File result;
 
-    String url = "/thredds/ncServer/cache/" + pathname;
+    String url = buildCacheUrl( pathname );
 
     try {
       GridPointWriter writer = new GridPointWriter(gds, diskCache);
       PrintWriter pw = !qp.acceptType.equals(QueryParams.NETCDF) ? res.getWriter() : null;
       result = writer.write(qp, pw);
 
-    } catch (IOException ioe) {
+    } catch (Throwable ioe) {
       log.error("Writing to " + cacheFilename, ioe);
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
+      if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
 
@@ -395,6 +420,24 @@ public class GridServlet extends AbstractServlet {
         }
       }
 
+      if (qp.hasDateRange) {
+        DateRange dr = qp.getDateRange();
+
+        if (dr.getStart().getDate().after(dr.getEnd().getDate())) {
+          qp.errs.append("Request Time range start > end\n" +
+                  "Request Time range = " + dr.toString() + "\n");
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return;
+        }
+
+        if (dr.getStart().getDate().after(gds.getEndDate()) || dr.getEnd().getDate().before(gds.getStartDate())) {
+          qp.errs.append("RequestTime range does not intersect the Data\n" +
+                  "Data Time Range = " + gds.getStartDate() + " to " + gds.getEndDate() + "\n");
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return;
+        }
+      }
+
       boolean hasBB = false;
       if (qp.hasBB) {
         LatLonRect maxBB = gds.getBoundingBox();
@@ -411,7 +454,7 @@ public class GridServlet extends AbstractServlet {
         }
       }
 
-      boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
+       boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
 
       try {
         sendFile(req, res, gds, qp, hasBB, addLatLon);
@@ -457,7 +500,7 @@ public class GridServlet extends AbstractServlet {
     File ncFile = diskCache.getCacheFile(pathname);
     String cacheFilename = ncFile.getPath();
 
-    String url = "/thredds/ncServer/cache/" + pathname;
+    String url = buildCacheUrl( pathname );
 
     try {
       NetcdfCFWriter writer = new NetcdfCFWriter();
@@ -471,10 +514,10 @@ public class GridServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
       return;
 
-    } catch (Exception ioe) {
+    } catch (Throwable ioe) {
       log.error("Writing to " + cacheFilename, ioe);
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
+      if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
 
@@ -496,7 +539,7 @@ public class GridServlet extends AbstractServlet {
       InputStream xslt = getXSLT(isPoint ? "ncssGridAsPoint.xsl" : "ncssGrid.xsl");
       Document doc = writer.makeGridForm();
       Element root = doc.getRootElement();
-      root.setAttribute("location", "/thredds/" + getPath() + path);
+      root.setAttribute("location", buildDatasetUrl( path));
 
       try {
         XSLTransformer transformer = new XSLTransformer(xslt);
@@ -504,10 +547,10 @@ public class GridServlet extends AbstractServlet {
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(html);
 
-      } catch (Exception e) {
+      } catch (Throwable e) {
         log.error("ForecastModelRunServlet internal error", e);
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
+        if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
         return;
       }
     }

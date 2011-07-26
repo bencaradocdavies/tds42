@@ -11,7 +11,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
     </c:when>
     <c:otherwise>
         <% response.setStatus( HttpServletResponse.SC_BAD_REQUEST ); %>
-    </c:otherwise>    
+    </c:otherwise>
 </c:choose>
 
 <%-- Displays a WmsException in the correct format --%>

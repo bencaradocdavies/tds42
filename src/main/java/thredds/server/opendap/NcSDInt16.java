@@ -34,7 +34,7 @@
 
 package thredds.server.opendap;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -56,7 +56,7 @@ public class NcSDInt16 extends SDInt16 implements HasNetcdfVariable {
    * @param v : the netcdf Variable
    */
   NcSDInt16(Variable v) {
-    super(NcDDS.escapeName(v.getShortName()));
+      super((v.getShortName()));
     this.ncVar = v;
   }
 

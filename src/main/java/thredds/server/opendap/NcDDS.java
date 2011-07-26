@@ -33,12 +33,12 @@
 
 package thredds.server.opendap;
 
+import opendap.dap.DAPNode;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.BaseType;
-import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 
@@ -46,58 +46,101 @@ import java.util.*;
  * NcDDS is a specialization of ServerDDS for netcdf files.
  * This creates a ServerDDS from the netcdf file.
  *
- *   @author jcaron
+ * @author jcaron
  */
 
-public class NcDDS extends ServerDDS implements Cloneable {
-  static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
-  static String DODScharset = "_!~*'-\"";
+public class NcDDS extends ServerDDS {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
+  static private String DODScharset = "_!~*'-\""; // Chars (other than alphanum)
+                                                  // that are legal in opendap names
 
-  private HashMap<String,BaseType> dimHash = new HashMap<String,BaseType>(50); // not copied on clone operation
+  //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordiinate variables
+  // Track various subsets of the variables
+  private Hashtable<String, Variable> coordvars = new Hashtable<String, Variable>(50);
+  private Vector<Variable> ddsvars = new Vector<Variable>(50);   // list of currently active variables
+  private Hashtable<String, Variable> gridarrays = new Hashtable<String, Variable>(50);
+  private Hashtable<String, Variable> used = new Hashtable<String, Variable>(50);
 
-  /** Constructor
-   * @param name name of the dataset, at bottom of DDS
-   * @param ncfile  create DDS from this
+  private Variable findvariable(String name)
+  {
+      for (Variable v: ddsvars) {
+          if(v.getFullName().equals(name)) return v;
+      }
+      return null;
+  }
+  /**
+   * Constructor
+   *
+   * @param name   name of the dataset, at bottom of DDS
+   * @param ncfile create DDS from this
    */
-  NcDDS( String name, NetcdfFile ncfile) {
-    super( StringUtil.escape( name, ""));
+  public NcDDS(String name, NetcdfFile ncfile) {
+     super((name));
+
+    // dup the variable set
+    for (Object o : ncfile.getVariables()) {
+      Variable v = (Variable) o;
+      ddsvars.add(v);
+    }
 
     // get coordinate variables
-    // LOOK: this should get optimized to store data once
     for (Object o : ncfile.getDimensions()) {
       Dimension dim = (Dimension) o;
-      Variable cv = ncfile.findVariable(dim.getName()); // LOOK WRONG
+      Variable cv = findvariable(dim.getName());
       if ((cv != null) && cv.isCoordinateVariable()) {
-        BaseType bt = null;
+        coordvars.put(dim.getName(),cv);
+        if (log.isDebugEnabled())
+          log.debug(" NcDDS adding coordinate variable " + cv.getFullName() + " for dimension " + dim.getName());
+      }
+    }
+
+     // collect grid array variables and set of used (in grids) coordinate variables
+     for (Variable v : ddsvars) {
+            boolean isgridarray = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
+            if(!isgridarray) continue;
+            Iterator iter = v.getDimensions().iterator();
+            while (isgridarray && iter.hasNext()) {
+                Dimension dim = (Dimension) iter.next();
+                if (dim.getName() == null)
+                  isgridarray = false;
+                else {
+                  Variable gv = coordvars.get(dim.getName());
+                  if (gv == null)
+                     isgridarray = false;
+		}
+            }
+            if(isgridarray)   {
+                gridarrays.put(v.getFullName(),v);
+                for(iter=v.getDimensions().iterator();iter.hasNext();) {
+                    Dimension dim = (Dimension) iter.next();
+                    Variable gv = coordvars.get(dim.getName());
+                    if (gv != null)
+                        used.put(gv.getFullName(),gv);
+                }
+            }
+     }
+      // remove the used coord vars from ddsvars (wrong for now; keep so that coord vars are top-level also)
+     // for(Variable v: used.values()) ddsvars.remove(v);
+
+    // Create the set of variables
+    for (Object o1 : ddsvars) {
+      Variable cv = (Variable) o1;
+      BaseType bt = null;
+
+      if (false && cv.isCoordinateVariable()) {
         if ((cv.getDataType() == DataType.CHAR))
           bt = (cv.getRank() > 1) ? new NcSDCharArray(cv) : new NcSDString(cv);
         else
           bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
-
-        dimHash.put(dim.getName(), bt);
-        if (log.isDebugEnabled())
-          log.debug(" NcDDS adding coordinate variable " + cv.getName() + " for dimension " + dim.getName());
       }
-    }
-
-    // add variables
-    for (Object o1 : ncfile.getVariables()) {
-      Variable v = (Variable) o1;
-      BaseType bt = null;
-
-      if (v.isCoordinateVariable()) {
-        bt = dimHash.get(v.getName());
-        if (bt == null)
-          log.error("NcDDS: Variable " + v.getName() + " missing coordinate variable in hash; dataset=" + name);
-      }
-
-      if (bt == null)
-        bt = createVariable(ncfile, v);
+      //if (bt == null)
+        bt = createVariable(ncfile, cv);
       addVariable(bt);
     }
   }
 
   // turn Variable into opendap variable
+
   private BaseType createVariable(NetcdfFile ncfile, Variable v) {
     BaseType bt;
 
@@ -123,10 +166,10 @@ public class NcDDS extends ServerDDS implements Cloneable {
 
   }
 
-  private BaseType createScalarVariable( NetcdfFile ncfile, Variable v) {
+  private BaseType createScalarVariable(NetcdfFile ncfile, Variable v) {
     DataType dt = v.getDataType();
     if (dt == DataType.DOUBLE)
-       return new NcSDFloat64(v);
+      return new NcSDFloat64(v);
     else if (dt == DataType.FLOAT)
       return new NcSDFloat32(v);
     else if (dt == DataType.INT)
@@ -136,53 +179,69 @@ public class NcDDS extends ServerDDS implements Cloneable {
     else if (dt == DataType.BYTE)
       return new NcSDByte(v);
     else if (dt == DataType.CHAR)
-        return new NcSDString(v);
+      return new NcSDString(v);
     else if (dt == DataType.STRING)
       return new NcSDString(v);
     else if (dt == DataType.STRUCTURE)
       return createStructure(ncfile, (Structure) v);
     else
-      throw new UnsupportedOperationException("NcDDS Variable data type = "+dt);
+      throw new UnsupportedOperationException("NcDDS Variable data type = " + dt);
   }
 
-  private BaseType createArray( NetcdfFile ncfile, Variable v) {
+  private BaseType createArray(NetcdfFile ncfile, Variable v) {
     // all dimensions must have coord vars to be a grid, also must have the same name
-    boolean isGrid = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
-    Iterator iter = v.getDimensions().iterator();
-    while (isGrid && iter.hasNext()) {
-      Dimension dim = (Dimension) iter.next();
-      Variable cv = ncfile.findVariable(dim.getName());  // LOOK WRONG
-      if ((cv == null) || !cv.isCoordinateVariable())
-        isGrid = false;
-    }
-
-    NcSDArray arr = new NcSDArray( v, createScalarVariable(ncfile, v));
+    boolean isGrid = (gridarrays.get(v.getFullName()) != null);
+    NcSDArray arr = new NcSDArray(v, createScalarVariable(ncfile, v));
     if (!isGrid)
-      return arr;
+        return arr;
 
+     // isgrid == true
     ArrayList<BaseType> list = new ArrayList<BaseType>();
-    list.add( arr);
-    iter = v.getDimensions().iterator();
-    while (iter.hasNext()) {
+    list.add(arr); // Array is first element in the list
+    for(Iterator iter = v.getDimensions().iterator();iter.hasNext();) {
       Dimension dim = (Dimension) iter.next();
-      list.add (dimHash.get( dim.getName()));
+      Variable v1 = used.get(dim.getName());
+      assert(v1 != null);
+      BaseType bt = null;
+      if ((v1.getDataType() == DataType.CHAR))
+        bt = (v1.getRank() > 1) ? new NcSDCharArray(v1) : new NcSDString(v1);
+      else
+        bt = new NcSDArray(v1, createScalarVariable(ncfile, v1));
+      assert(bt != null);
+      list.add(bt) ;
     }
-
-    return new NcSDGrid( v.getShortName(), list);
+    return new NcSDGrid(v.getShortName(), list);
   }
 
-  private BaseType createStructure( NetcdfFile ncfile, Structure s) {
+  private BaseType createStructure(NetcdfFile ncfile, Structure s) {
     ArrayList<BaseType> list = new ArrayList<BaseType>();
     for (Object o : s.getVariables()) {
       Variable nested = (Variable) o;
       list.add(createVariable(ncfile, nested));
     }
-    return new NcSDStructure( s, list);
+    return new NcSDStructure(s, list);
   }
 
+  /*
   public static String escapeName(String vname) {
     // vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until opendap code fixed
-    return StringUtil.escape(vname, NcDDS.DODScharset);
+    String newname = StringUtil.escape(vname, NcDDS.DODScharset);
+      return newname;
+  }
+  */
+
+  /**
+   * Returns a clone of this <code>?</code>.
+   * See BaseType.cloneDAG()
+   *
+   * @param map track previously cloned nodes
+   * @return a clone of this object.
+   */
+  public DAPNode cloneDAG(CloneMap map)
+          throws CloneNotSupportedException {
+    NcDDS d = (NcDDS) super.cloneDAG(map);
+    d.coordvars = coordvars;
+    return d;
   }
 
 }

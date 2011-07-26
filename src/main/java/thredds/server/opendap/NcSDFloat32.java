@@ -34,7 +34,7 @@
 
 package thredds.server.opendap;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 
 import java.io.IOException;
 import java.io.DataOutputStream;
@@ -56,7 +56,7 @@ public class NcSDFloat32 extends SDFloat32 implements HasNetcdfVariable {
    * @param v : the netcdf Variable
    */
   NcSDFloat32(Variable v) {
-    super(NcDDS.escapeName(v.getShortName()));
+      super((v.getShortName()));
     this.ncVar = v;
   }
 

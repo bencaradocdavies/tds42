@@ -35,6 +35,7 @@ package thredds.tds;
 import junit.framework.*;
 
 import thredds.catalog.*;
+import thredds.servlet.URLEncoder;
 import ucar.nc2.TestAll;
 import ucar.nc2.dods.TestLocalDodsServer;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -55,29 +56,112 @@ import java.io.IOException;
 import java.util.List;
 
 public class TestTdsDodsServer extends TestCase {
+  private URLEncoder encoder = new URLEncoder();
 
   public TestTdsDodsServer( String name) {
     super(name);
   }
 
-  String dataset = "http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060317_0000.grib1";
+  //                http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1.ascii?Visibility[0:1:0][10:21:0][0:10:0]
+  //                http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1.ascii?Visibility[0:1:0][0:1:0][0:1:0]
+  String dataset = "http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1";
   public void testGrid() {
     String grid = dataset + ".ascii?Visibility[0:1:0][0:1:0][0:1:0]";
     System.out.println(" request= "+grid);
-    String result = IO.readURLcontents(grid);
-    System.out.println(" result= "+result);
-    assert result.indexOf("Error") < 0;  // not an error message
+    try {
+      String result = IO.readURLcontentsWithException(grid);
+      System.out.println(" result= "+result);
+    } catch (IOException ioe) {
+      System.out.printf("FAIL %s%n", ioe.getMessage());
+      assert false;
+    }
   }
+
+  public void testGridArrayAsc() {
+     String array = dataset + ".asc?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
 
   public void testGridArray() {
-    String array = dataset + ".asc?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
-    System.out.println(" request= "+array);
-    String result = IO.readURLcontents(array);
-    System.out.println(" result= "+result);
-    assert result.indexOf("Error") < 0;  // not an error message
-  }
+     String array = dataset + ".dods?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
 
-  public void testSingleDataset() throws IOException {
+  public void testGridArray2() {
+     String array = dataset + ".dods?Visibility.Visibility[0][0][0]";
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+  public void testGridArray3() {
+     String array = dataset + ".dods?Visibility.Visibility[0:0][0:0][0:0]";
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+  public void testGridArrayEsc() {
+     String array = dataset + ".dods?Visibility.Visibility" + encoder.encode("[0:1:0][0:1:0][0:1:0]");
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+  public void testGridArrayEsc2() {
+     String array = dataset + ".dods?Visibility.Visibility"  + encoder.encode("[0][0][0]");
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+  public void testGridArrayEsc3() {
+     String array = dataset + ".dods?Visibility.Visibility"  + encoder.encode("[0:0][0:0][0:0]");
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+   public void testSingleDataset() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);
 
     InvDataset ds = cat.findDatasetByID("testDataset");
@@ -134,7 +218,7 @@ public class TestTdsDodsServer extends TestCase {
     final String urlPrefix = "dods://localhost:8080/thredds/dodsC/opendapTest/";
     final String dirName = TestAll.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
-    TestAll.actOnAll(dirName, null, new TestAll.Act() {
+    TestAll.actOnAll(dirName, new TestAll.FileFilterNoWant(".gbx8"), new TestAll.Act() {
       public int doAct(String filename) throws IOException {
         filename = StringUtil.replace(filename, '\\', "/");
         filename = StringUtil.remove(filename, dirName);
@@ -147,7 +231,7 @@ public class TestTdsDodsServer extends TestCase {
         CompareNetcdf.compareFiles(org_ncfile, dods_file);
         return 1;
       }
-    });
+    }, false);
   }
 
 

@@ -48,7 +48,6 @@ import java.io.*;
 
 public class RadarStationCollection {
 
-  public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
   private static final long serialVersionUID = 20100119L;
 
   /**
@@ -86,7 +85,7 @@ public class RadarStationCollection {
    /**
    * Radar product suffix
    */
-  String suffix = null;
+  String suffix = ".ar2v";
 
   /**
    *  ArrayList of yyyyddmm days
@@ -106,6 +105,7 @@ public class RadarStationCollection {
 
   public RadarStationCollection(String dir, String stnName, boolean type, String product) {
 
+    StringBuffer sb = new StringBuffer( dir );
     this.stnTime = type;
     this.stnName = stnName;
     this.product = product;
@@ -114,13 +114,13 @@ public class RadarStationCollection {
       if (product == null) {
         this.dir = dir;
       } else {
-        this.dir = dir + "/" + product;
+        this.dir = sb.append( "/" ).append( product ).toString();
       }
-    } else { //
+    } else { //  TODO: need test case
       if (product == null) {
         this.dir = dir;
       } else {
-        this.dir = dir + "/"+ product +"/"; // product/station type directory
+        this.dir = sb.append( "/" ).append( product ).append( "/" ).toString();
       }
     }
 
@@ -131,7 +131,7 @@ public class RadarStationCollection {
    *
    * @return times ArrayList
    */
-  public final ArrayList getDays() {
+  public final ArrayList<String> getDays() {
     return yyyymmdd;
   }
 
@@ -140,7 +140,7 @@ public class RadarStationCollection {
    * @param day String
    * @return hhmm's ArrayList
    */
-  public final ArrayList gethhmm( String day ) {
+  public final ArrayList<String> getHourMinute( String day ) {
     return hhmm.get( day );
   }
 
@@ -194,18 +194,59 @@ public class RadarStationCollection {
     return standardName;
   }
 
+  public ArrayList<String> getYyyymmdd() {
+    return yyyymmdd;
+  }
+
+  public HashMap<String, ArrayList<String>> getHhmm() {
+    return hhmm;
+  }
+
+  public void setDir(String dir) {
+    this.dir = dir;
+  }
+
+  public void setStnTime(boolean stnTime) {
+    this.stnTime = stnTime;
+  }
+
+  public void setStnProduct(boolean stnProduct) {
+    this.stnProduct = stnProduct;
+  }
+
+  public void setStnName(String stnName) {
+    this.stnName = stnName;
+  }
+
+  public void setProduct(String product) {
+    this.product = product;
+  }
+
+  public void setStandardName(boolean standardName) {
+    this.standardName = standardName;
+  }
+
+  public void setSuffix(String suffix) {
+    this.suffix = suffix;
+  }
+
+  public void setYyyymmdd(ArrayList<String> yyyymmdd) {
+    this.yyyymmdd = yyyymmdd;
+  }
+
+  public void setHhmm(HashMap<String, ArrayList<String>> hhmm) {
+    this.hhmm = hhmm;
+  }
+
   /**
    * write out this object
    *
-   * @return String filename of write.
+   * @return success of write.
    */
   public boolean write( PrintStream ps ) {
 
-    //String filename = dir + "/."+ day;
-    //FileOutputStream fos = null;
     ObjectOutputStream out = null;
     try {
-      //fos = new FileOutputStream(filename);
       out = new ObjectOutputStream( ps );
       out.writeObject(this);
       out.close();

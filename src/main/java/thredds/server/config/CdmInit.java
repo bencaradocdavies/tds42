@@ -42,7 +42,6 @@ import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.ncml.Aggregation;
-import ucar.nc2.ncml.AggregationFmrc;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 
 import java.util.Calendar;
@@ -63,20 +62,27 @@ public class CdmInit {
 
   private DiskCache2 aggCache;
   private Timer timer;
-  private String fmrcDefinitionDirectory;
   private thredds.inventory.MController cacheManager;
 
+  /* private String fmrcDefinitionDirectory;
   public void setFmrcDefinitionDirectory(String dir) {
     fmrcDefinitionDirectory = dir;
-  }
+  } */
 
   void init(TdsContext tdsContext) {
+    // prefer cdmRemote when available
+    //ThreddsDataFactory.setPreferCdm( true);
+
     // new for 4.2 - feature collection caching
     String fcCache = ThreddsConfig.get("FeatureCollection.dir", null);
     if (fcCache == null)
       fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/cache/collection/");  // cacheDirectory is old way
+    long maxSizeBytes = ThreddsConfig.getBytes("FeatureCollection.maxSize", 0);
+    int jvmPercent = ThreddsConfig.getInt("FeatureCollection.jvmPercent", 2);
+
     try {
-      thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache);
+      thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
+      thredds.inventory.DatasetCollectionManager.enableMetadataManager();
       startupLog.info("CdmInit: FeatureCollection.cacheDirectory= "+fcCache);
     } catch (Exception e) {
       startupLog.error("CdmInit: Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);
@@ -102,7 +108,7 @@ public class CdmInit {
 
     ////////////////////////////////////
     //AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
-    FmrcInventoryServlet.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
+    // FmrcInventoryServlet.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
 
     // NetcdfFileCache : default is allow 200 - 400 open files, cleanup every 10 minutes
     int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 200);

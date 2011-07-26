@@ -31,6 +31,7 @@
  */
 package thredds.server.cdmremote;
 
+import ucar.unidata.util.EscapeStrings;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,7 +48,6 @@ import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 import java.util.StringTokenizer;
-import java.net.URLDecoder;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
@@ -58,7 +58,6 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
  * This is a prototype for "cdm remote service".
@@ -73,7 +72,7 @@ public class CdmRemoteControllerOld extends AbstractController implements LastMo
 
   private TdsContext tdsContext;
   private boolean allow = true;
-  private boolean debug = true;
+  private boolean debug = false;
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
@@ -110,7 +109,7 @@ public class CdmRemoteControllerOld extends AbstractController implements LastMo
       return null;
     } */
 
-    String query = req.getQueryString();
+    String query = EscapeStrings.unescapeOGC(req.getQueryString());
     //if (query != null) System.out.println(" query=" + query);
 
     String view = ServletUtil.getParameterIgnoreCase(req, "view");
@@ -167,7 +166,7 @@ public class CdmRemoteControllerOld extends AbstractController implements LastMo
           ncWriter.sendHeader( wbc);
 
         } else { // they want some data
-          query = URLDecoder.decode(query, "UTF-8");
+          query = EscapeStrings.urlDecode(query);  // old: URLDecoder.decode(query, "UTF-8");
           StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());

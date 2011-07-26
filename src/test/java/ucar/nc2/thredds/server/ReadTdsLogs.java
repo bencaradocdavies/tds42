@@ -33,23 +33,20 @@
 
 package ucar.nc2.thredds.server;
 
+import ucar.nc2.util.net.HTTPException;
+import ucar.nc2.util.net.HTTPMethod;
+import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
-import ucar.nc2.util.net.HttpClientManager;
+import ucar.unidata.util.EscapeStrings;
 
 import java.io.BufferedReader;
 import java.io.*;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.*;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
  * Read TDS access logs
@@ -62,11 +59,11 @@ public class ReadTdsLogs {
   private static AtomicInteger reqno = new AtomicInteger(0);
   private static Formatter out, out2;
 
-  private HttpClient httpClient;
+  private HTTPSession httpClient = new HTTPSession();
 
   ///////////////////////////////////////////////////////
   // multithreading
-  final int nthreads = 4;
+  final int nthreads = 3;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;
@@ -81,12 +78,9 @@ public class ReadTdsLogs {
   final String server;
   boolean dump = false;
 
-  ReadTdsLogs(String server) throws FileNotFoundException {
+  ReadTdsLogs(String server) throws FileNotFoundException, HTTPException {
     this.server = server;
-
-    httpClient = HttpClientManager.init(null, "ReadTdsLogs");
-    MultiThreadedHttpConnectionManager cm = (MultiThreadedHttpConnectionManager) httpClient.getHttpConnectionManager();
-    cm.setMaxConnectionsPerHost(nthreads);
+    // httpClient = HttpClientManager.init(null, "ReadTdsLogs");
 
     executor = Executors.newFixedThreadPool(nthreads); // number of threads
     //completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
@@ -138,23 +132,19 @@ public class ReadTdsLogs {
 
     void send() throws IOException {
 
-      HttpMethod method = null;
+      HTTPMethod method = null;
       try {
-        method = new GetMethod(server + URLnaming.escapeQuery(log.path));
-        // out2.format("send %s %n", method.getPath());
-
-        method.setFollowRedirects(true);
-        statusCode = httpClient.executeMethod(method);
+        String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
+        method = httpClient.newMethodGet(server + URLnaming.escapeQuery(unescapedForm));  // escape the query part
+        //out2.format("send %s %n", method.getPath());
+        statusCode = method.execute();
 
         InputStream is = method.getResponseBodyAsStream();
         if (is != null)
-          bytesRead = IO.copy2null(method.getResponseBodyAsStream(), 10 * 1000); // read data and throw away
+          bytesRead = IO.copy2null(is, 10 * 1000); // read data and throw away
 
-      } catch (URISyntaxException e) {
-        e.printStackTrace();
-        
       } finally {
-        if (method != null) method.releaseConnection();
+        if (method != null) method.close();
       }
 
     }
@@ -210,23 +200,22 @@ public class ReadTdsLogs {
     private boolean compareAgainstLive(SendRequestTask itask) throws IOException {
       if (serverLive == null) return true;
 
-      HttpMethod method = null;
+      HTTPMethod method = null;
       try {
-        method = new GetMethod(serverLive + itask.log.path);
-        // out2.format("send %s %n", method.getPath());
+        method = httpClient.newMethodGet(serverLive + itask.log.path);
+        out2.format("send %s %n", method.getPath());
 
-        method.setFollowRedirects(true);
-        int statusCode = httpClient.executeMethod(method);
+        int statusCode = method.execute();
 
         InputStream is = method.getResponseBodyAsStream();
         if (is != null)
-          IO.copy2null(method.getResponseBodyAsStream(), 10 * 1000); // read data and throw away
+          IO.copy2null(is, 10 * 1000); // read data and throw away
 
         // out2.format("%5d: test status=%d live=%d %n", itask.reqnum, itask.statusCode, statusCode);
         return statusCode == itask.statusCode;
 
       } finally {
-        if (method != null) method.releaseConnection();
+        if (method != null) method.close();
       }
 
     }
@@ -238,7 +227,7 @@ public class ReadTdsLogs {
     try {
       // Wait for existing tasks to terminate
       if (!executor.awaitTermination(secs, TimeUnit.SECONDS)) {
-        executor.shutdownNow(); // Cancel currently executing tasks
+        executor.shutdownNow(); // Cancel currently executing tasks                       
         // Wait a while for tasks to respond to being cancelled
         if (!executor.awaitTermination(secs, TimeUnit.SECONDS))
           System.err.println("Pool did not terminate");
@@ -394,6 +383,7 @@ public class ReadTdsLogs {
       if (line == null) break;
       Log log = parseLine(regPattern, line);
       if (log == null) continue;
+      if (log.path == null) continue;
       total++;
 
       if ((total + total_submit < skip_submit) || (total + total_submit > max_submit)) {
@@ -401,7 +391,7 @@ public class ReadTdsLogs {
         continue;
       }
 
-      if (log.verb.equals("POST")) {
+      if (log.verb != null && log.verb.equals("POST")) {
         skip++;
         // System.out.println(" *** skip POST " + log);
         continue;
@@ -428,12 +418,12 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (log.path.indexOf("dodsC") < 0) {
+      /* if (log.path.indexOf("dodsC") < 0) {  // only dods
         skip++;
         continue;
-      } */
+      }  */
 
-      /* if (log.path.indexOf("fmrc") > 0)  {
+      /* if (log.path.indexOf("fmrc") > 0)  {  // exclude fmrc
         // System.out.println(" *** skip fmrc " + log);
         skip++;
         continue;
@@ -669,20 +659,14 @@ public class ReadTdsLogs {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
     out2 = new Formatter(System.out);
 
-    /* why ?
-    HttpClient client = HttpClientManager.init(null, "ReadTdsLogs");       
-    DConnect2.setHttpClient(client);                                                      
-    HTTPRandomAccessFile.setHttpClient(client);
-    NcStreamRemote.setHttpClient(client);
-    NetcdfDataset.setHttpClient(client);  */
-
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs(serverTest);
     long startElapsed = System.nanoTime();
 
-    //String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\tmp\\";
+    //String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\t   mp\\";
     String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
     //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8081\\access\\";
+    //  String accessLogs = "Q:/cdmUnitTest/tds/logs";
 
     System.out.printf("server=%s send files from %s %n", serverTest, accessLogs);
 

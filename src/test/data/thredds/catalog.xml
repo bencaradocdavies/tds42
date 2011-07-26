@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog name="Unit Test Server: see thredds\tds\src\test\java\thredds\tds\TestTDSAll.java"
+<catalog name="Unit Test Server: see thredds\tds\src\test\java\thredds\tds\TestTdsLocal.java"
          xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
          xmlns:xlink="http://www.w3.org/1999/xlink">
 
@@ -18,8 +18,9 @@
   <datasetRoot path="testStandardTds" location="content/testdata/"/>
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="testStandardTds/testData.nc"
            dataType="Grid"/>
-  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="testStandardTds/testData2.nc"
+  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="testStandardTds/2004050412_eta_211.nc"
            dataType="Grid"/>
+
   <datasetScan name="Test standard TDS content" ID="testStandardTdsScan" path="testStandardTdsScan"
                location="content/testdata">
     <metadata inherited="true">
@@ -49,11 +50,16 @@
   <!-- opendap specific -->
   <datasetScan name="opendapTest" ID="opendapTest" path="opendapTest" location="Q:/cdmUnitTest/tds/opendap">
     <metadata inherited="true">
-      <serviceName>odap</serviceName>
+      <serviceName>all</serviceName>
     </metadata>
   </datasetScan>
 
   <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
+
+  <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="testStandardTds/testData2.grib2" restrictAccess="tiggeData">
+    <serviceName>odap</serviceName>
+    <dataType>Grid</dataType>
+  </dataset>
 
   <!-- test NcML in dataset -->
   <dataset name="Example NcML Modified" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
@@ -166,5 +172,6 @@
 
   </featureCollection>
 
+  <catalogRef xlink:title="Test FMRC with inner and outer NcML" xlink:href="wav_mod.xml" name=""/>
 
 </catalog>

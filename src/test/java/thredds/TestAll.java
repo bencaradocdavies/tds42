@@ -39,6 +39,7 @@ import java.util.Properties;
 
 import junit.framework.JUnit4TestAdapter;
 import junit.framework.TestSuite;
+import thredds.server.opendap.TestCEEvaluator;
 
 /**
  * TestSuite that runs all TDS unit tests.
@@ -54,9 +55,12 @@ public class TestAll
     // suite.addTest( new JUnit4TestAdapter( thredds.server.catalogservice.LocalCatalogServiceControllerTest.class ) );
     suite.addTestSuite( thredds.server.catalogservice.TestLocalCatalogRequest.class );
     suite.addTestSuite( thredds.server.catalogservice.TestRemoteCatalogRequest.class );
+    suite.addTest( new JUnit4TestAdapter( thredds.server.ncSubset.GridServletTest.class ));
     suite.addTestSuite( thredds.util.TestStartsWithPathAliasReplacement.class );
     suite.addTestSuite( thredds.util.TestStringValidateEncodeUtils.class );
     suite.addTest( thredds.util.filesource.TestAll.suite() );
+
+    suite.addTest(new TestSuite(TestCEEvaluator.class));    
 
     return suite;
   }

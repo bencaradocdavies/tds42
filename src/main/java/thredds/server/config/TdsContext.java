@@ -42,11 +42,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.server.ncSubset.GridServlet;
 import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
 import thredds.catalog.InvDatasetScan;
 import ucar.nc2.util.IO;
+import ucar.unidata.util.StringUtil;
 
 /**
  * _more_
@@ -291,12 +294,23 @@ public class TdsContext
         String msg = "Couldn't create TDS log directory [" + logDir.getPath() + "].";
         System.out.println( "ERROR - TdsContext.init(): " + msg);
         //logServerStartup.error( "TdsContext.init(): " + msg  );
-        // ToDo thow an IllegalStateException() ????
+        throw new IllegalStateException(msg);
       }
     }
-    System.setProperty( "tds.log.dir", logDir.getPath() ); // variable substitution
+    String loggingDirectory = StringUtil.substitute(logDir.getPath(),"\\", "/");
+    System.setProperty( "tds.log.dir", loggingDirectory); // variable substitution
 
     this.publicContentDirectory = new File( this.contentDirectory, "public");
+    if ( ! publicContentDirectory.exists())
+    {
+      if ( ! publicContentDirectory.mkdirs())
+      {
+        String msg = "Couldn't create TDS public directory [" + publicContentDirectory.getPath() + "].";
+        System.out.println( "ERROR - TdsContext.init(): " + msg);
+        //logServerStartup.error( "TdsContext.init(): " + msg  );
+        throw new IllegalStateException(msg);
+      }
+    }
     this.publicContentDirSource = new BasicDescendantFileSource( this.publicContentDirectory);
 
     this.iddContentDirectory = new File( this.rootDirectory, this.iddContentPath);
@@ -336,6 +350,8 @@ public class TdsContext
     // ToDo LOOK Find a better way once thredds.catalog2 is used.
     InvDatasetScan.setContext( contextPath );
     InvDatasetScan.setCatalogServletName( "/catalog" );
+    InvDatasetFeatureCollection.setContext( contextPath );
+    GridServlet.setContextPath( contextPath ); // Won't need when switch GridServlet to use Swing MVC and TdsContext
 
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
@@ -362,8 +378,7 @@ public class TdsContext
    *
    * @return the context path.
    */
-  public String getContextPath()
-  {
+  public String getContextPath() {
     return contextPath;
   }
 

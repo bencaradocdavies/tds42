@@ -218,6 +218,30 @@ public class DatasetHandler {
     return ncfile;
   }
 
+  static public InvDatasetFeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	  return getFeatureCollection(req, res, req.getPathInfo());
+  }
+
+  // return null means request has been handled, and calling routine should exit without further processing
+  static public InvDatasetFeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+    if (reqPath == null)
+      return null;
+
+    if (reqPath.startsWith("/"))
+      reqPath = reqPath.substring(1);
+
+    // see if its under resource control
+    if (!resourceControlOk( req, res, reqPath))
+      return null;
+
+    // look for a feature collection dataset
+    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+    if ((match != null) && (match.dataRoot.featCollection != null)) {
+      return match.dataRoot.featCollection;
+    }
+
+    return null;
+  }
 
   // used only for the case of Dataset (not DatasetScan) that have an NcML element inside.
   // This makes the NcML dataset the target of the server.
@@ -366,17 +390,22 @@ public class DatasetHandler {
       if (debugResourceControl)
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for datasetScan " + scan.getPath());
       resourceControlMatcher.put(scan.getPath(), ds.getRestrictAccess());
+
     } else if (ds instanceof InvDatasetFmrc) {
       InvDatasetFmrc fmrc = (InvDatasetFmrc) ds;
       if (debugResourceControl)
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for datasetFmrc " + fmrc.getPath());
       resourceControlMatcher.put(fmrc.getPath(), ds.getRestrictAccess());
+
     } else { // dataset
       if (debugResourceControl)
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for dataset " + ds.getUrlPath());
-      //resourceControlHash.put(ds.getUrlPath(), ds.getRestrictAccess());
+
+      // LOOK: seems like you only need to add if InvAccess.InvService.isReletive
+      // LOOK: seems like we should use resourceControlMatcher to make sure we match .dods, etc
       for (InvAccess access : ds.getAccess()) {
-        resourceControlHash.put(access.getUrlPath(), ds.getRestrictAccess());
+        if (access.getService().isRelativeBase())
+          resourceControlHash.put(access.getUrlPath(), ds.getRestrictAccess());
       }
 
     }

@@ -64,7 +64,7 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
   MakeGribAggXML(InvDataset top, PrintStream out) {
     this.out = out;
     CatalogCrawler crawler = new CatalogCrawler( CatalogCrawler.USE_ALL_DIRECT, false, this);
-    crawler.crawlDirectDatasets( top, null, out, null);
+    crawler.crawlDirectDatasets( top, null, out, null, true);
     report( out);
   }
 
@@ -113,10 +113,10 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
 
       TimeCoord tc = getTimeCoordinate(data);
 
-      UberVariable uv = (UberVariable) varHash.get( v.getName());
+      UberVariable uv = (UberVariable) varHash.get( v.getFullName());
       if (uv == null) {
         uv = new UberVariable(v);
-        varHash.put( v.getName(), uv);
+        varHash.put( v.getFullName(), uv);
       }
       uv.addTimeCoord(tc);
     }
