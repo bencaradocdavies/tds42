@@ -36,6 +36,17 @@
   -->
 
   <!--
+   The CrawlableDataset plug-in configuration allows particular implementations of the
+   CrawlableDataset interface to be used for specific data root URL paths.
+   NOTE: Currently only supported in datasetRoot usage (similar support for datasetScan
+    available with "crawlableDatasetImpl" child element).
+
+  <crawlableDatasetPlugins>
+    <config path="test" className="thredds.crawlabledataset.CrawlableDatasetFile"/>
+  </crawlableDatasetPlugins>
+  -->
+
+  <!--
    * Setup for generated HTML pages.
    *
    * NOTE: URLs may be absolute or relative, relative URLs must be relative

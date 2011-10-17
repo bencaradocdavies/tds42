@@ -55,7 +55,9 @@ public class TestAll
     // suite.addTest( new JUnit4TestAdapter( thredds.server.catalogservice.LocalCatalogServiceControllerTest.class ) );
     suite.addTestSuite( thredds.server.catalogservice.TestLocalCatalogRequest.class );
     suite.addTestSuite( thredds.server.catalogservice.TestRemoteCatalogRequest.class );
-    suite.addTest( new JUnit4TestAdapter( thredds.server.ncSubset.GridServletTest.class ));
+    suite.addTest( new JUnit4TestAdapter( thredds.server.ncSubset.GridServletTest.class ) );
+    suite.addTest( new JUnit4TestAdapter( thredds.server.config.CrDsPluginConfigManager.class ));
+    suite.addTest( new JUnit4TestAdapter( thredds.servlet.ThreddsConfigTest.class ));
     suite.addTestSuite( thredds.util.TestStartsWithPathAliasReplacement.class );
     suite.addTestSuite( thredds.util.TestStringValidateEncodeUtils.class );
     suite.addTest( thredds.util.filesource.TestAll.suite() );
@@ -154,7 +156,7 @@ public class TestAll
   /**
    * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
    */
-  public static String cdmTestDataDir = "src/test/data/";
+  public static String tdsLocalTestDataDir = "src/test/data/";
 
   /**
    * Temporary data directory (for writing temporary data).

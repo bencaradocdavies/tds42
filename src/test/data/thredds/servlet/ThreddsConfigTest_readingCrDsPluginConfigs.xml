@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<threddsConfig>
+  <crawlableDatasetPlugins>
+    <config path="" className="my.cool.CrDsImpl" />
+    <config path="show/moe" className="" />
+    <config path="joe/foe" className="thredds.crawlabledataset.CrawlableDatasetFile" />
+  </crawlableDatasetPlugins>
+</threddsConfig>

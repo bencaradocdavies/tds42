@@ -37,15 +37,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.util.Collections;
+import java.util.*;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.JDOMException;
 import org.jdom.Element;
 import org.springframework.util.StringUtils;
+import thredds.server.config.CrDsPluginConfigManager;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 
@@ -60,6 +58,12 @@ import ucar.nc2.util.xml.RuntimeConfigParser;
  */
 public class ThreddsConfig {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ThreddsConfig.class );
+
+  /**
+   * Logger for messages about TDS startup. DO NOT USE in init() or readConfig().
+   */
+  private static org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
+
   private static String _filename;
   private static Element rootElem;
 
@@ -149,6 +153,53 @@ public class ThreddsConfig {
   public static List<String> getContentRootList()
   {
     return Collections.unmodifiableList( contentRootList);
+  }
+
+  public static CrDsPluginConfigManager getCrDsPluginConfigManager() {
+    CrDsPluginConfigManager result = new CrDsPluginConfigManager();
+    List<Element> crDsPluginElems = rootElem.getChildren( "crawlableDatasetPlugins" );
+    if ( crDsPluginElems.size() == 0) return result;
+    List<Element> configElems;
+    String path, className;
+    for ( Element crDsPluginConfigsElem : crDsPluginElems ) {
+      configElems = crDsPluginConfigsElem.getChildren( "config" );
+      for ( Element configElem : configElems ) {
+        path = configElem.getAttributeValue( "path" );
+        className = configElem.getAttributeValue( "className" );
+        try {
+          // Try to add the current configuration information.
+          if ( result.addPluginConfig( path, className ))
+            logServerStartup.info( generateCrDsPluginConfigLogMsg( true, path, className, null ) );
+          else
+            logServerStartup.info( generateCrDsPluginConfigLogMsg( false, path, className, "path already mapped to a class that implements CrDs" ) );
+        } catch ( IllegalArgumentException e ) {
+          logServerStartup.info( generateCrDsPluginConfigLogMsg( false, path, className, e.getMessage()) );
+          continue;
+        } catch ( ClassNotFoundException e ) {
+          logServerStartup.info( generateCrDsPluginConfigLogMsg( false, path, className, "class not found" ) );
+          continue;
+        }
+      }
+    }
+    return result;
+  }
+
+  private static String generateCrDsPluginConfigLogMsg( boolean successfullyAdded, String path, String className,
+                                                        String reason )
+  {
+    StringBuilder sb = new StringBuilder( "CrawlableDataset plug-in config: " );
+    if ( successfullyAdded )
+      sb.append( "Added" );
+    else
+      sb.append( "Dropped" );
+    sb.append( " config [" ).append( path ).append( "," ).append( className ).append( "]" );
+
+    if ( reason == null || reason.equals( "" ) )
+      sb.append( "." );
+    else
+      sb.append( " - " ).append( reason ).append( "." );
+
+    return sb.toString();
   }
 
   static public String get(String paramName, String defValue) {

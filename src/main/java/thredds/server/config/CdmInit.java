@@ -58,7 +58,7 @@ import java.io.IOException;
  * @since Feb 20, 2009
  */
 public class CdmInit {
-  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  static private org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private DiskCache2 aggCache;
   private Timer timer;
@@ -83,9 +83,9 @@ public class CdmInit {
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
       thredds.inventory.DatasetCollectionManager.enableMetadataManager();
-      startupLog.info("CdmInit: FeatureCollection.cacheDirectory= "+fcCache);
+      logServerStartup.info("CdmInit: FeatureCollection.cacheDirectory= "+fcCache);
     } catch (Exception e) {
-      startupLog.error("CdmInit: Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);
+      logServerStartup.error("CdmInit: Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);
     }
 
     /*
@@ -98,16 +98,16 @@ public class CdmInit {
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
       thredds.inventory.DatasetCollectionManager.setController(cacheManager);
-      startupLog.info("CdmInit: ehcache.config= "+ehConfig+" directory= "+ehDirectory);
+      logServerStartup.info("CdmInit: ehcache.config= "+ehConfig+" directory= "+ehDirectory);
 
     } catch (IOException ioe) {
-      startupLog.error("CdmInit: Cant read ehcache config file "+ehConfig, ioe);
+      logServerStartup.error("CdmInit: Cant read ehcache config file "+ehConfig, ioe);
     }
     */
 
     boolean useBytesForDataSize = ThreddsConfig.getBoolean("catalogWriting.useBytesForDataSize", false);    
     InvCatalogFactory10.useBytesForDataSize(useBytesForDataSize);
-    startupLog.info("CdmInit: catalogWriting.useBytesForDataSize= "+useBytesForDataSize);
+    logServerStartup.info("CdmInit: catalogWriting.useBytesForDataSize= "+useBytesForDataSize);
 
     ////////////////////////////////////
     //AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
@@ -119,7 +119,7 @@ public class CdmInit {
     int secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 10 * 60);
     if (max > 0) {
       NetcdfDataset.initNetcdfFileCache(min, max, secs);
-      startupLog.info("CdmInit: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
+      logServerStartup.info("CdmInit: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
     // HTTP file access : // allow 20 - 40 open datasets, cleanup every 10 minutes
@@ -128,7 +128,7 @@ public class CdmInit {
     secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 10 * 60);
     if (max > 0) {
       ServletUtil.setFileCache( new FileCacheRaf(min, max, secs));
-      startupLog.info("CdmInit: HTTPFileCache.initCache= ["+min+","+max+"] scour = "+secs);
+      logServerStartup.info("CdmInit: HTTPFileCache.initCache= ["+min+","+max+"] scour = "+secs);
     }
 
     // for backwards compatibility - should be replaced by direct specifying of the IndexExtendMode
@@ -137,11 +137,11 @@ public class CdmInit {
     GridServiceProvider.IndexExtendMode mode = extendIndex ? GridServiceProvider.IndexExtendMode.extendwrite : GridServiceProvider.IndexExtendMode.readonly;
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexFileModeOnOpen( mode);
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexFileModeOnSync( mode);
-    startupLog.info("CdmInit: GridServiceProvider.IndexExtendMode= "+mode);
+    logServerStartup.info("CdmInit: GridServiceProvider.IndexExtendMode= "+mode);
 
     boolean alwaysUseCache = ThreddsConfig.getBoolean("GribIndexing.alwaysUseCache", false);
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( alwaysUseCache );
-    startupLog.info("CdmInit: GribIndexing.alwaysUseCache= "+alwaysUseCache);
+    logServerStartup.info("CdmInit: GribIndexing.alwaysUseCache= "+alwaysUseCache);
 
     // optimization: netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
@@ -152,12 +152,12 @@ public class CdmInit {
     int maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
     aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
     Aggregation.setPersistenceCache(aggCache);
-    startupLog.info("CdmInit:  AggregationCache= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
+    logServerStartup.info("CdmInit:  AggregationCache= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
     // how to choose the typical dataset ?
     String typicalDataset = ThreddsConfig.get("Aggregation.typicalDataset", "penultimate");
     Aggregation.setTypicalDatasetMode(typicalDataset);
-    startupLog.info("CdmInit: Aggregation.setTypicalDatasetMode= "+typicalDataset);
+    logServerStartup.info("CdmInit: Aggregation.setTypicalDatasetMode= "+typicalDataset);
 
     // Nj22 disk cache
     dir = ThreddsConfig.get("DiskCache.dir", new File( tdsContext.getContentDirectory(), "/cache/cdm/" ).getPath());
@@ -166,14 +166,14 @@ public class CdmInit {
     long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);
     DiskCache.setRootDirectory(dir);
     DiskCache.setCachePolicy(alwaysUse);
-    startupLog.info("CdmInit:  CdmCache= "+dir+" scour = "+scourSecs+" maxSize = "+maxSize);
+    logServerStartup.info("CdmInit:  CdmCache= "+dir+" scour = "+scourSecs+" maxSize = "+maxSize);
 
     Calendar c = Calendar.getInstance(); // contains current startup time
     c.add(Calendar.SECOND, scourSecs / 2); // starting in half the scour time
     timer = new Timer("CdmDiskCache");
     timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
 
-    startupLog.info("CdmInit complete");
+    logServerStartup.info("CdmInit complete");
   }
 
   // should be called when tomcat exits
@@ -183,7 +183,7 @@ public class CdmInit {
     if (aggCache != null) aggCache.exit();
     if (cacheManager != null) cacheManager.close();
     thredds.inventory.bdb.MetadataManager.closeAll();
-    startupLog.info("CdmInit shutdown");
+    logServerStartup.info("CdmInit shutdown");
   }
 
   private class CacheScourTask extends TimerTask {
