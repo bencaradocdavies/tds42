@@ -4,6 +4,10 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2.9: (2011-10-xx)
+  fileserver: use setContentLength() when content length < MAX_INT. HEAD call wont allow addHeader().
+  remove ehcache of file system. some OS not propagating changes up directory.
+
  4.2.8 (2011-07-20)
   CollectionUpdater- use config.name, not config.spec for Job, Task names
   upgrade to NcISO 1.2
