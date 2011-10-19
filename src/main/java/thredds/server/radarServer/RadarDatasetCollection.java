@@ -235,7 +235,7 @@ public class RadarDatasetCollection {
     ArrayList<String> stations = new ArrayList<String>();
     File dir = new File(stnDir);
     if (dir.exists() && dir.isDirectory()) {
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      //System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String aChild : children) {
         File child = new File(dir, aChild);
@@ -327,9 +327,9 @@ public class RadarDatasetCollection {
     File dir = new File( sb.toString() );
     if (dir.exists() && dir.isDirectory()) {
       // TODO: make a log message / comment out
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      //System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       sb.insert( 0, "In directory ");
-      System.out.println( sb.toString() );
+      //System.out.println( sb.toString() );
       ArrayList<String> currenthhmm = new ArrayList<String>();
       String[] children = dir.list();
       Matcher m;
@@ -354,7 +354,7 @@ public class RadarDatasetCollection {
         for ( String hm : currenthhmm ) {
           sb.setLength( 0 );
           sb.append( currentDay ).append( "_" ).append( hm );
-          System.out.println( sb.toString() );
+          //System.out.println( sb.toString() );
         }
       }
     }
@@ -373,7 +373,7 @@ public class RadarDatasetCollection {
         for ( String hm : tal ) {
           sb.setLength( 0 );
           sb.append( day ).append( "_" ).append( hm );
-          System.out.println( sb.toString() );
+          //System.out.println( sb.toString() );
         }
       }
     }
@@ -435,12 +435,12 @@ public class RadarDatasetCollection {
       tdir = args[0];
       product = (args[1].equals("null")) ? null : args[1];
     } else {
-      System.out.println("Not the correct parameters: tdir, product");
+      //System.out.println("Not the correct parameters: tdir, product");
       return;
     }
     // create/populate dataset
     RadarDatasetCollection rdc = new RadarDatasetCollection( tdir, product );
-    System.out.println( "Dates for station KFTG" );
+    //System.out.println( "Dates for station KFTG" );
     Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
     Date now =  cal.getTime();
     String currentDay = dateFormat.format( now );
