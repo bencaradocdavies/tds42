@@ -4,9 +4,13 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.9: (2011-10-xx)
+ 4.2.9: (2011-10-20)
+  change catalogService mappings (catalogService-servlet.xml) to support tomcat 7
+  TDS-201 - Upgrade to ncISO 1.2.4
+  TDS-187 - Extend datasetRoot configuration to support user specified implementation of backing CrawlableDataset.
   fileserver: use setContentLength() when content length < MAX_INT. HEAD call wont allow addHeader().
   remove ehcache of file system. some OS not propagating changes up directory.
+  TDS-194: Switch RadarServer to use new Spring-based implementation.
 
  4.2.8 (2011-07-20)
   CollectionUpdater- use config.name, not config.spec for Job, Task names
