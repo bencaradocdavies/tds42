@@ -80,41 +80,45 @@
   <property name="ncwms.jar" value="release/ncwms.jar" />
   <property name="netcdf.jar" value="release/netcdf-4.2.jar"/>
   <property name="opendap.jar" value="release/opendap-2.2.jar"/>
-  <property name="threddsIso.jar" value="release/threddsIso-1.2.4.jar"/>
+  <property name="threddsIso.jar" value="release/threddsIso-2.0.jar"/>
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
   <property name="bdb.jar" value="external/je-4.0.71.jar"/>
   <property name="catalina.jar" value="external/catalina.jar"/>
+  <property name="commons-io.jar" value="external/commons-io-1.4.jar"/>
   <property name="commons-lang.jar" value="external/commons-lang-2.4.jar"/>
   <property name="cas.jar" value="external/casclient-2.1.1.jar"/>
-  <property name="ehcache.jar" value="external/ehcache-1.6.0.jar"/>
   <property name="fileupload.jar" value="external/commons-fileupload-1.2.1.jar"/>
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
   <property name="jakarta-oro.jar" value="external/jakarta-oro-2.0.8.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
-  <property name="jcommon.jar" value="external/jcommon-1.0.15.jar"/>
-  <property name="jfreechart.jar" value="external/jfreechart-1.0.12.jar"/>
   <property name="joda.jar" value="external/joda-time-1.6.jar"/>
   <property name="protobuf.jar" value="external/protobuf-java-2.3.0.jar"/>
   <property name="slf4jAPI.jar" value="external/slf4j-api-1.5.6.jar"/>
-  <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.5.6.jar"/>
-  <property name="log4j.jar" value="external/log4j-1.2.15.jar"/>
-  <!-- property name="nlog4j.jar" value="external/nlog4j-1.2.25.jar"/ -->
   <property name="quartz.jar" value="external/quartz-1.7.3.jar"/>
   <property name="spring.jar" value="external/spring-2.5.jar"/>
   <property name="spring-webmvc.jar" value="external/spring-webmvc-2.5.jar"/>
-  <property name="jstl.jar" value="external/jstl.jar"/>
-  <property name="jstl-standard.jar" value="external/standard.jar"/>
 
   <!-- Third-party libraries needed for runtime. -->
-  <property name="commons-io.jar" value="external/commons-io-1.4.jar"/>
-  <property name="epsg-wkt.jar" value="external/epsg-wkt.jar"/>
-  <property name="geotk-bundle-referencing.jar" value="external/geotk-bundle-referencing-3.04.jar"/>
+  <property name="ehcache.jar" value="external/ehcache-1.6.0.jar"/>
   <property name="http-codec.jar" value="external/commons-codec-1.3.jar"/>
   <property name="http-logging.jar" value="external/commons-logging-1.1.jar"/>
   <property name="jaxen.jar" value="external/jaxen-1.1.2.jar"/>
+  <property name="jcommon.jar" value="external/jcommon-1.0.15.jar"/>
+  <property name="jfreechart.jar" value="external/jfreechart-1.0.12.jar"/>
   <property name="json-taglib.jar" value="external/json-taglib-0.4.1.jar"/>
+  <property name="jstl.jar" value="external/jstl.jar"/>
+  <property name="jstl-standard.jar" value="external/standard.jar"/>
+  <property name="log4j.jar" value="external/log4j-1.2.15.jar"/>
+  <property name="saxon.jar" value="external/saxon-he-9.3.0.5.jar"/>
+  <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.5.6.jar"/>
+
+  <!-- Third-party libraries needed by ncWMS for runtime. -->
+  <property name="epsg-wkt.jar" value="external/epsg-wkt.jar"/>
+  <!-- ToDo Get rid of Geotk dependence in ThreddsLayer so only used by ncWMS and can move to runtime list. -->
+  <property name="geotk-bundle-referencing.jar" value="external/geotk-bundle-referencing-3.04.jar"/>
+
 
   <!-- The servlet jar file is needed to compile the servlet but is not needed
     by the servlet engine, therefore, it is not needed in the war file. -->
@@ -175,6 +179,7 @@
       <include name="${jstl.jar}"/>
       <include name="${jstl-standard.jar}"/>
       <include name="${log4j.jar}"/>
+      <include name="${saxon.jar}"/>
       <include name="${slf4jImpl.jar}"/>
     </patternset>
   </fileset>
