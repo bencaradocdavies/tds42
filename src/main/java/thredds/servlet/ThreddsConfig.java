@@ -69,6 +69,7 @@ public class ThreddsConfig {
 
   private static List<String> catalogRoots;
   private static List<String> contentRootList;
+  private static CrDsPluginConfigManager crDsPluginConfigManager;;
 
   public static void init( String filename) {
     _filename = filename;
@@ -144,6 +145,8 @@ public class ThreddsConfig {
       if (errlog.length() > 0)
         System.out.println( "ThreddsConfig:WARN: " + errlog.toString());
     }
+
+    crDsPluginConfigManager = readCrDsPluginConfigManager();
   }
 
   static void getCatalogRoots(List<String> extraList) {
@@ -156,6 +159,10 @@ public class ThreddsConfig {
   }
 
   public static CrDsPluginConfigManager getCrDsPluginConfigManager() {
+    return crDsPluginConfigManager;
+  }
+
+  private static CrDsPluginConfigManager readCrDsPluginConfigManager() {
     CrDsPluginConfigManager result = new CrDsPluginConfigManager();
     List<Element> crDsPluginElems = rootElem.getChildren( "crawlableDatasetPlugins" );
     if ( crDsPluginElems.size() == 0) return result;
@@ -168,15 +175,15 @@ public class ThreddsConfig {
         className = configElem.getAttributeValue( "className" );
         try {
           // Try to add the current configuration information.
-          if ( result.addPluginConfig( path, className ))
-            logServerStartup.info( generateCrDsPluginConfigLogMsg( true, path, className, null ) );
+          if ( result.addPluginConfig( path, className ) )
+            System.out.println( "ThreddsConfig:INFO: " + generateCrDsPluginConfigLogMsg( true, path, className, null ));
           else
-            logServerStartup.info( generateCrDsPluginConfigLogMsg( false, path, className, "path already mapped to a class that implements CrDs" ) );
+            System.out.println( "ThreddsConfig:WARN: " + generateCrDsPluginConfigLogMsg( false, path, className, "path already mapped to a class that implements CrDs" ) );
         } catch ( IllegalArgumentException e ) {
-          logServerStartup.info( generateCrDsPluginConfigLogMsg( false, path, className, e.getMessage()) );
+          System.out.println( "ThreddsConfig:ERROR: " + generateCrDsPluginConfigLogMsg( false, path, className, e.getMessage()) );
           continue;
         } catch ( ClassNotFoundException e ) {
-          logServerStartup.info( generateCrDsPluginConfigLogMsg( false, path, className, "class not found" ) );
+          System.out.println( "ThreddsConfig:ERROR: " + generateCrDsPluginConfigLogMsg( false, path, className, "class not found" ) );
           continue;
         }
       }

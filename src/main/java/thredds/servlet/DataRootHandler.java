@@ -884,7 +884,7 @@ public class DataRootHandler {
 
       this.datasetRootProxy
               = new InvDatasetScan( null, "", this.path, this.dirLocation,
-                                    crDsClassName, null, null, null, null,
+                                    crDsClassName, this.path, null, null, null,
                                     false, null, null, null, null);
     }
 
