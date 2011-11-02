@@ -4,7 +4,8 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.9: (2011-10-20)
+ 4.2.9: (2011-11-02)
+  fmrc: protect against bad user input
   change catalogService mappings (catalogService-servlet.xml) to support tomcat 7
   TDS-201 - Upgrade to ncISO 1.2.4
   TDS-187 - Extend datasetRoot configuration to support user specified implementation of backing CrawlableDataset.
