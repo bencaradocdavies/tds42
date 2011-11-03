@@ -151,6 +151,7 @@ public class QueryRadarServerController extends AbstractController  {
       // Query results in model
       Map<String,Object> model = new HashMap<String,Object>();
       radarQuery( request, response, model );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       if (model == null || model.size() == 0 ) {
          ModelAndView mav = new ModelAndView(CREATE_VIEW);
          mav.addObject(MODEL_KEY, MSG_CODE);

@@ -168,7 +168,7 @@ public class RadarDayCollection implements Serializable {
     ArrayList<String> stations = new ArrayList<String>();
     File dir = new File(stnDir);
     if (dir.exists() && dir.isDirectory()) {
-      //System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String aChild : children) {
         File child = new File(dir, aChild);
@@ -190,7 +190,7 @@ public class RadarDayCollection implements Serializable {
 
     File dir = new File(stnDir);
     if (dir.exists() && dir.isDirectory()) {
-      //System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       ArrayList<String> hhmm = new ArrayList<String>();
       String[] children = dir.list();
       if( children.length > 0 ) { // check for standard name
@@ -293,6 +293,7 @@ public class RadarDayCollection implements Serializable {
           in.close();
         }
         catch (IOException e) {
+          e.printStackTrace();
           //System.out.println("radarServer reading DayCollection "+ sfile );
         }
       }
@@ -312,7 +313,7 @@ public class RadarDayCollection implements Serializable {
       day = args[2];
       product = (args[3].equals("null")) ? null : args[3];
     } else {
-      //System.out.println("Not the correct parameters: tdir, structType, day, product");
+      System.out.println("Not the correct parameters: tdir, structType, day, product");
       return;
     }
     // create/populate/write
@@ -320,9 +321,9 @@ public class RadarDayCollection implements Serializable {
     rdc.populate(tdir, type, day, product);
     String sfile = rdc.write();
     if (sfile == null) {
-      //System.out.println("RadarDayCollection write Unsuccessful");
+      System.out.println("RadarDayCollection write Unsuccessful");
     } else {
-      //System.out.println("RadarDayCollection write successful");
+      System.out.println("RadarDayCollection write successful");
     }
   }
 

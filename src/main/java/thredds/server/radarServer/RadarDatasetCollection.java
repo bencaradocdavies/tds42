@@ -180,9 +180,9 @@ public class RadarDatasetCollection {
         dir = new File( sb.append( tdir).append( "/").append( stn).toString());
         if (dir.exists() && dir.isDirectory()) {
 
-          //sb.setLength( 0 );
-          //sb.append("In directory ").append(dir.getParent()).append("/").append(dir.getName());
-          //log.info( sb.toString() );
+          sb.setLength( 0 );
+          sb.append("In directory ").append(dir.getParent()).append("/").append(dir.getName());
+          log.debug( sb.toString() );
           File pdir = null;
           if( product != null ) {
             pdir = new File( sb.append("/").append(product).toString());
@@ -235,7 +235,7 @@ public class RadarDatasetCollection {
     ArrayList<String> stations = new ArrayList<String>();
     File dir = new File(stnDir);
     if (dir.exists() && dir.isDirectory()) {
-      //System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      log.debug("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String aChild : children) {
         File child = new File(dir, aChild);
@@ -326,10 +326,8 @@ public class RadarDatasetCollection {
     sb.append( "/" ).append( rsc.stnName ).append( "/" ).append( currentDay );
     File dir = new File( sb.toString() );
     if (dir.exists() && dir.isDirectory()) {
-      // TODO: make a log message / comment out
-      //System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       sb.insert( 0, "In directory ");
-      //System.out.println( sb.toString() );
+      log.debug( sb.toString() );
       ArrayList<String> currenthhmm = new ArrayList<String>();
       String[] children = dir.list();
       Matcher m;
@@ -354,7 +352,7 @@ public class RadarDatasetCollection {
         for ( String hm : currenthhmm ) {
           sb.setLength( 0 );
           sb.append( currentDay ).append( "_" ).append( hm );
-          //System.out.println( sb.toString() );
+          System.out.println( sb.toString() );
         }
       }
     }
@@ -373,7 +371,7 @@ public class RadarDatasetCollection {
         for ( String hm : tal ) {
           sb.setLength( 0 );
           sb.append( day ).append( "_" ).append( hm );
-          //System.out.println( sb.toString() );
+          System.out.println( sb.toString() );
         }
       }
     }
@@ -435,7 +433,7 @@ public class RadarDatasetCollection {
       tdir = args[0];
       product = (args[1].equals("null")) ? null : args[1];
     } else {
-      //System.out.println("Not the correct parameters: tdir, product");
+      System.out.println("Not the correct parameters: tdir, product");
       return;
     }
     // create/populate dataset
