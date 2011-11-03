@@ -71,9 +71,9 @@ import java.net.URISyntaxException;
  *   <li>Mapping="*.xml"      -- ServletPath="/some/path/*.xml" and PathInfo=null</li>
  *   <li>Mapping="*.html"     -- ServletPath="/some/path/*.html" and PathInfo=null</li>
  * </ul>
- * <p>Note: When "/catalog/*" request paths end in "/", a suffix is appended
- * to the path. The suffix default value is "catalog.html" but can be set in
- * {@link LocalCatalogRequestDataBinder}.
+ * <p>Note: When "/catalog/*" request paths end in "/", a catalog path suffix
+ * is appended to the path. The catalog path suffix's default value is
+ * "catalog.html" but can be set in {@link LocalCatalogRequestDataBinder}.</p>
  *
  * <p> Uses the following information from an HTTP request:
  * <ul>
