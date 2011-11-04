@@ -418,10 +418,11 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (log.path.indexOf("dodsC") < 0) {  // only dods
+      if ((!log.path.contains("radarServer")) && !log.path.contains("iso") && !log.path.contains("ncml")
+              && !log.path.contains("uddc")) {  // only radarServer and ncIso
         skip++;
         continue;
-      }  */
+      }
 
       /* if (log.path.indexOf("fmrc") > 0)  {  // exclude fmrc
         // System.out.println(" *** skip fmrc " + log);

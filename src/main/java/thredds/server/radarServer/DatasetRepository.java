@@ -122,7 +122,7 @@ public class DatasetRepository {
           InvDatasetScan ds = (InvDatasetScan) datasets.get(j);
           if (ds.getPath() != null) {
             dataLocation.put(ds.getPath(), ds.getScanLocation());
-            log.info("path =" + ds.getPath() + " location =" + ds.getScanLocation());
+            log.debug("path =" + ds.getPath() + " location =" + ds.getScanLocation());
           }
           ds.setXlinkHref(ds.getPath() + "/dataset.xml");
         }
@@ -211,18 +211,18 @@ public class DatasetRepository {
       catURI = new URI("file:" + StringUtil.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
-      log.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
+      log.debug("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
 
     // read the catalog
-    log.info("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
+    log.debug("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
     FileInputStream ios = null;
     try {
       ios = new FileInputStream(catalogFullPath);
       acat = factory.readXML(ios, catURI);
     } catch (Throwable t) {
-      log.info("radarServer readCatalog(): Exception on catalog=" +
+      log.error("radarServer readCatalog(): Exception on catalog=" +
           catalogFullPath + " " + t.getMessage()); //+"\n log="+cat.getLog(), t);
       return null;
     }
@@ -232,7 +232,7 @@ public class DatasetRepository {
           ios.close();
         }
         catch (IOException e) {
-          log.info("radarServer readCatalog(): error closing" + catalogFullPath);
+          log.error("radarServer readCatalog(): error closing" + catalogFullPath);
         }
       }
     }

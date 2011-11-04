@@ -117,7 +117,7 @@ public class StationRadarServerController extends AbstractController {
         String rt = pathInfo.substring(1, pathInfo.indexOf('/', 1));
         radarType = DatasetRepository.RadarType.valueOf( rt );
       } catch ( Exception e ) {
-        log.info( "Invalid dataset url reference "+ pathInfo );
+        log.debug( "Invalid dataset url reference "+ pathInfo );
         throw new RadarServerException( "Invalid dataset url reference "+ pathInfo );
       }
       // return stations of dataset
@@ -134,11 +134,13 @@ public class StationRadarServerController extends AbstractController {
         if ( this.htmlView )
         {
           //int i = HtmlWriter.getInstance().writeCatalog(request, response, station, true);
-          //log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
+          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
           return null;
         }
-        else
+        else {
+          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
           return new ModelAndView( "stationXml", model );
+        }
       }
 
     }

@@ -145,7 +145,7 @@ public class QueryRadarServerController extends AbstractController  {
       log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ) );
       // catch rogue invalid request here
       if ( request.getQueryString() == null ) {
-        log.info( "Invalid dataset url reference "+ request.getPathInfo() );
+        log.debug( "Invalid dataset url reference "+ request.getPathInfo() );
         throw new RadarServerException( "Invalid dataset url reference "+ request.getPathInfo() );
       }
       // Query results in model
@@ -188,7 +188,7 @@ public class QueryRadarServerController extends AbstractController  {
         String rt = pathInfo.substring(0, pathInfo.indexOf('/', 1));
         radarType = DatasetRepository.RadarType.valueOf( rt );
       } catch ( Exception e ) {
-        log.info( "Invalid dataset url reference "+ pathInfo );
+        log.debug( "Invalid dataset url reference "+ pathInfo );
         throw new RadarServerException( "Invalid dataset url reference "+ pathInfo );
       }
       Boolean level2 = pathInfo.contains( "level2" );

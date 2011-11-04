@@ -138,7 +138,7 @@ public class CatalogRadarServerController extends AbstractController {
         if ( model != null )
           return new ModelAndView( "datasetXml", model );
         else {
-          log.info( "Dataset problem" );
+          log.warn( "Dataset problem" );
           throw new RadarServerException( "Dataset problem" );
         }
       }
@@ -184,7 +184,7 @@ public class CatalogRadarServerController extends AbstractController {
       } else if (pathInfo.indexOf( "/catalog") > 0) {
         dsPath = pathInfo.substring( 0, pathInfo.indexOf( "/catalog") );
       } else {
-        log.error("RadarServer.datasetInfoXml", "Invalid url request" );
+        log.debug("RadarServer.datasetInfoXml", "Invalid url request" );
         throw new RadarServerException( "Invalid url request" );
       }
 
@@ -248,7 +248,7 @@ public class CatalogRadarServerController extends AbstractController {
       } else if (pathInfo.indexOf( "/catalog") > 0) {
         dsPath = pathInfo.substring( 0, pathInfo.indexOf( "/catalog") );
       } else {
-        log.error("RadarServer.datasetInfoXml", "Invalid url request" );
+        log.debug("RadarServer.datasetInfoXml", "Invalid url request" );
         throw new RadarServerException( "Invalid url request" );
       }
       // search for dataset by dsPath
@@ -274,7 +274,7 @@ public class CatalogRadarServerController extends AbstractController {
       throw new RadarServerException( "CatalogRadarServerController.datasetInfoXml" );
     }
     if ( ! found ) {
-      log.error("RadarServer.datasetInfoXml", "Invalid url request" );
+      log.debug("RadarServer.datasetInfoXml", "Invalid url request" );
       throw new RadarServerException( "Invalid url request" );
     }
 
