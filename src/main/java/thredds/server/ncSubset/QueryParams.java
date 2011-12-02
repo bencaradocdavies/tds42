@@ -166,7 +166,7 @@ public class QueryParams {
    */
   public boolean parseQuery(HttpServletRequest req, HttpServletResponse res, String[] acceptOK) throws IOException {
     queryString = req.getQueryString();
-    if (queryString != null) {
+    if (queryString == null) {
       writeErr(req, res, "Must have a quey string", HttpServletResponse.SC_BAD_REQUEST);
       return false;
     }
