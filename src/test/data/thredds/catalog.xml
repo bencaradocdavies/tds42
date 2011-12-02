@@ -18,7 +18,8 @@
   <datasetRoot path="testStandardTds" location="content/testdata/"/>
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="testStandardTds/testData.nc"
            dataType="Grid"/>
-  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="testStandardTds/2004050412_eta_211.nc"
+  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap"
+           urlPath="testStandardTds/2004050412_eta_211.nc"
            dataType="Grid"/>
 
   <datasetScan name="Test standard TDS content" ID="testStandardTdsScan" path="testStandardTdsScan"
@@ -56,7 +57,8 @@
 
   <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
 
-  <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="testStandardTds/testData2.grib2" restrictAccess="tiggeData">
+  <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="testStandardTds/testData2.grib2"
+           restrictAccess="tiggeData">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
   </dataset>
@@ -173,5 +175,14 @@
   </featureCollection>
 
   <catalogRef xlink:title="Test FMRC with inner and outer NcML" xlink:href="wav_mod.xml" name=""/>
+
+  <dataset name="Test nested scan Aggregation" ID="MODIS-Agg" urlPath="MODIS-Agg.nc">
+    <serviceName>all</serviceName>
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+      <aggregation dimName="time" type="joinExisting" recheckEvery="15 min">
+        <scan location="C:/dev/github/thredds/cdm/src/test/data/ncml/nested/" suffix=".nc" subdirs="true"/>
+      </aggregation>
+    </netcdf>
+  </dataset>
 
 </catalog>
