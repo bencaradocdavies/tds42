@@ -810,7 +810,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
           } else if (bt instanceof SDGrid) {
             SDGrid grid = (SDGrid) bt;
-            SDArray da = (SDArray) grid.getVar(0);
+            SDArray da = (SDArray) grid.getVar(0); // LOOK wrong: must check isProject()
             BaseType base = da.getPrimitiveVector().getTemplate();
             DataType dtype = DODSNetcdfFile.convertToNCType(base);
             int elemSize = dtype.getSize();
