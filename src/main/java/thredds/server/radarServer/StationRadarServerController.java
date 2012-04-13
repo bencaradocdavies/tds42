@@ -138,7 +138,7 @@ public class StationRadarServerController extends AbstractController {
           return null;
         }
         else {
-          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
+          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
           return new ModelAndView( "stationXml", model );
         }
       }

@@ -4,7 +4,7 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.10: (2011-12-xx)
+ 4.2.10: (2012-04-09)
   ncss barfing when no query string
   minor update of models.xml for motherlode
 
