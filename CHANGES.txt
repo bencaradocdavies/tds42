@@ -4,9 +4,11 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.10: (2012-04-09)
+ 4.2.10: (2012-04-17)
+  new ToolsUI.jnlp file
   ncss barfing when no query string
   minor update of models.xml for motherlode
+  ncISO 2.0.2
 
  4.2.9: (2011-11-02)
   fmrc: protect against bad user input
