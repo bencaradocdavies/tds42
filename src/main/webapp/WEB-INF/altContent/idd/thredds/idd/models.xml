@@ -25,14 +25,12 @@
       <dataFormat>GRIB-1</dataFormat>
       <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html"
                      xlink:title="NCEP Model documentation"/>
-      <documentation xlink:href="http://www.dtcenter.org/com-GSI/users/docs/"
-                     xlink:title="NCEP Analysis documentation / tutorial"/>
-      <documentation xlink:href="http://mag.ncep.noaa.gov/"
-                     xlink:title="NCEP Model Analyses and Guidance Page"/>
-
       <documentation type="rights">Freely available</documentation>
       <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
       <documentation type="processing_level">Read by CDM Forecast Model Run Collection.</documentation>
+      <documentation xlink:href="http://www.nco.ncep.noaa.gov/pmb/nwprod/analysis/"
+                     xlink:title="NCEP/NWS Model Analyses and Forecasts Page"/>
+
       <creator>
         <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
         <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
@@ -269,7 +267,7 @@
                          path="fmrc/NCEP/GFS/Puerto_Rico_0p5deg">
         <metadata inherited="true">
           <dataFormat>GRIB-2</dataFormat>
-          <documentation type="summary">NCEP GFS Model : 
+          <documentation type="summary">NCEP GFS Model :
             Puerto_Rico 0.5 degree Lat/Lon grid.
             Model runs are made at 0, 6, 12, 18 hours out to 10 days.
             Horizontal = 102 by 107 points, resolution .5 degree, Lat/Lon projection.
@@ -312,10 +310,8 @@
     <dataset ID="FMRC/NCEP/NAM" name="North American Model (NAM) ">
 
       <metadata inherited="true">
-        <documentation type="summary">
-          NCEP Nonhydrostatic Multiscale Model on B-grid (NMMB) running in the
-          NOAA Environmental Modeling System (NEMS) infrastructure, and
-          Gridpoint Statistical Interpolation (GSI) analysis
+        <documentation type="summary">NCEP Nonhydrostatic Mesoscale Model (NMM) and Gridpoint Statistical Interpolation
+          (GSI) analysis, running in the Weather Research and Forecasting (WRF) infrastructure.
         </documentation>
         <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/NAMWRFjun2006.htm"
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
@@ -532,7 +528,6 @@
           <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
           <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
         </featureCollection>
-        
       </dataset>
 
       <dataset ID="FMRC/NCEP/NAM/CONUS_40km" name="NCEP-NAM-CONUS_40km">
@@ -604,28 +599,30 @@
       </featureCollection>
     </dataset>
 
-    <dataset ID="FMRC/NCEP/RUC" name="Rapid Update Cycle (RUC) Model">
+    <dataset ID="FMRC/NCEP/RAP" name="Rapid Refresh (RAP) Model">
       <metadata inherited="true">
-        <documentation type="summary">NCEP Rapid Update Cycle (RUC) Model: frequently updated short-range weather forecasts.
+        <documentation type="summary">NCEP Rapid Refresh (RAP) Model: frequently updated short-range weather forecasts.
+        The RAP replaced the Rapid Update Cycle (RUC) model on 01 May 2012 at 12Z.
         </documentation>
-        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/rucintro.htm"
-                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
+        <documentation xlink:href="http://rapidrefresh.noaa.gov/"
+                       xlink:title="ERSRL (Earth System Research Laboratory) documentation"/>
         <dataFormat>GRIB-2</dataFormat>
       </metadata>
 
-      <featureCollection name="NCEP-RUC2-CONUS_13km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC2/CONUS_13km">
+      <featureCollection name="NCEP-RAP-CONUS_13km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RAP/CONUS_13km">
         <metadata inherited="true">
           <dataFormat>GRIB-2</dataFormat>
-          <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC2).
-            Model runs are made hourly, with analysis and hourly forecasts out to 12 hours; on the 0, 3, 6, 9, 12, 15,
-            18, and 21Z runs. The other forecast are out to 9 hours.
-            Horizontal = 337 by 451 points, resolution 13.55 km, LambertConformal projection.
+          <documentation type="summary">NCEP Model output Rapid Refresh (RAP).
+            Model runs are made hourly, with analysis and hourly forecasts out to 12 hours on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs; the other forecast are out to 9 hours.
+            Horizontal = 337 by 451 points, resolution 13.545 km, LambertConformal projection.
+            Note that the RAP replaced the Rapid Update Cycle (RUC) model at 12 Z on 01 May 2012.
           </documentation>
         </metadata>
 
         <collection
-            spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_13km/RUC2_CONUS_13km_#yyyyMMdd_HHmm#.grib2"
-            name="RUC2_CONUS_13km"
+            spec="/data/ldm/pub/native/grid/NCEP/RAP/CONUS_13km/RAP_CONUS_13km_#yyyyMMdd_HHmm#.grib2"
+            name="RAP_CONUS_13km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -633,7 +630,78 @@
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
-      <dataset ID="FMRC/NCEP/RUC2" name="NCEP-RUC2-CONUS_20km">
+      <featureCollection name="NCEP-RAP-CONUS_20km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RAP/CONUS_20km/">
+        <metadata inherited="true">
+            <dataFormat>GRIB-2</dataFormat>
+              <documentation type="summary">NCEP Model output Rapid Refresh (RAP).
+                Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
+                18, and 21Z runs, also 5, 6, 8, 9, 11, 12 hour forecasts.
+              </documentation>
+          </metadata>
+
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/RAP/CONUS_20km/RAP_CONUS_20km_#yyyyMMdd_HHmm#.grib2"
+              name="RAP_CONUS_20km_surface"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
+
+      <featureCollection name="NCEP-RAP-CONUS_40km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RAP/CONUS_40km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-1</dataFormat>
+          <documentation type="summary">NCEP Model output Rapid Refresh (RAP).
+            Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs, there are also 4, 5, 6, 7, 8, 9, and 12 hour forecasts.
+            Horizontal = 151 by 113 points, resolution 40.63 km, LambertConformal projection.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RAP/CONUS_40km/RAP_CONUS_40km_#yyyyMMdd_HHmm#.grib1"
+            name="RAP_CONUS_40km"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+      <featureCollection name="NCEP-RAP-CONUS_40km-conduit" featureType="FMRC" harvest="true" path="fmrc/NCEP/RAP/CONUS_40km/conduit">
+        <metadata inherited="true">
+          <dataFormat>GRIB-1</dataFormat>
+          <documentation type="summary">NCEP Model output Rapid Refresh (RAP) via CONDUIT
+            Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs, there are also 4, 5, 6, 7, 8, 9, and 12 hour forecasts.
+            Horizontal = 151 by 113 points, resolution 40.63 km, LambertConformal projection.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RAP/CONUS_40km/conduit/RAP_CONUS_40km_#yyyyMMdd_HHmm#.grib1"
+            name="RAP_CONUS_40km-conduit"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+    </dataset>
+
+    <dataset ID="FMRC/NCEP/RUC" name="Rapid Update Cycle (RUC) Model">
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Rapid Update Cycle (RUC) Model: frequently updated short-range weather forecasts.
+        Note that the RUC has been replaced by the Rapid Refresh (RAP) model. During the transition, separate surface, hybrid, and
+        pressure grids from the RUC 20km were replaced by one product in the RAP, and are no longer being transmitted. In addition,
+        the 80 km RUC was completely removed. USERS SHOULD UPDATE THEIR LINKS TO REFLECT THE MOVE TO RAP, AS THESE RUC CATALOGS WILL
+        NO LONGER BE MAINTAINED, AND WILL BE COMPLETELY REMOVED AFTER THE UPGRADE OF THE MOTHERLODE DATA SERVER TO TDS 4.3.
+        </documentation>
+        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/rucintro.htm"
+                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
+        <dataFormat>GRIB-2</dataFormat>
+      </metadata>
+
+      <!--dataset ID="FMRC/NCEP/RUC2" name="NCEP-RUC2-CONUS_20km">
         <metadata inherited="true">
           <documentation type="summary">NCEP Rapid Update Cycle 2 (RUC2).
             Horizontal = 301 by 225 points, resolution 20.31 km, Lambert Conformal projection.
@@ -696,12 +764,12 @@
           <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
           <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
         </featureCollection>
-      </dataset>
+      </dataset--!>
 
       <featureCollection name="NCEP-RUC2-CONUS_40km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC2/CONUS_40km">
         <metadata inherited="true">
           <dataFormat>GRIB-1</dataFormat>
-          <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC2).
+          <documentation type="summary">NCEP Model output Rapid Refresh (RAP) [formally known as the Rapid Update Cycle RUC].
             Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
             18, and 21Z runs, there are also 4, 5, 6, 7, 8, 9, and 12 hour forecasts.
             Horizontal = 151 by 113 points, resolution 40.63 km, LambertConformal projection.
@@ -720,7 +788,10 @@
       <featureCollection name="NCEP-RUC-CONUS_80km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC/CONUS_80km">
         <metadata inherited="true">
           <dataFormat>GRIB-1</dataFormat>
-          <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC).
+          <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC) - The 80 km RUC output is no longer available, and
+            a similar 80 km resolution grid will not be produced for the Rapid Refresh model (RAP), the replacement for RUC.
+            NCEP Model output Rapid Update Cycle (RUC). These files will eventually age off of our servers and will not be accessible
+            after that time.
             Model runs are made hourly, with analysis and 3 hour forecast; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs,
             there are also 6, 9, and 12 hour forecasts.
             Horizontal = 93 by 65 points, resolution 81.27 km LambertConformal projection.
@@ -735,7 +806,6 @@
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
-
     </dataset>
 
     <dataset ID="FMRC/NCEP/DGEX" name="Downscaled GFS with Eta Extension (DGEX)">
