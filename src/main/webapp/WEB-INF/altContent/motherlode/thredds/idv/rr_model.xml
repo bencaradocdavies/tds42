@@ -16,14 +16,22 @@
     <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
   </service>
 
-  <datasetScan name="NCEP-RAP-CONUS_13km" harvest="true" ID="idv/NCEP/RAP/CONUS_13km" path="model/NCEP/RAP/CONUS_13km" location="/data/ldm/pub/native/grid/NCEP/RR/CONUS_13km/">
+  <metadata inherited="true">
+    <documentation type="summary">NCEP Rapid Refresh (RR / RAP) Model: frequently updated short-range weather forecasts.
+      The RAP replaced the Rapid Update Cycle (RUC) model on 01 May 2012 at 12Z.
+      Model runs are made hourly, with analysis and hourly forecasts out to 12 hours on the 0, 3, 6, 9, 12, 15,
+      18, and 21Z runs; analysis and hourly forecasts out to 9 hours are available for the other hourly runs.
+    </documentation>
+    <documentation xlink:href="http://rapidrefresh.noaa.gov/"
+                   xlink:title="ERSRL (Earth System Research Laboratory) documentation"/>
+    <dataFormat>GRIB-2</dataFormat>
+  </metadata>
+
+  <datasetScan name="NCEP-RR-CONUS_13km" harvest="true" ID="idv/NCEP/RR/CONUS_13km" path="model/NCEP/RR/CONUS_13km" location="/data/ldm/pub/native/grid/NCEP/RR/CONUS_13km/">
+
     <metadata inherited="true">
-      <dataFormat>GRIB-2</dataFormat>
-      <documentation type="summary">NCEP Model output Rapid Refresh (RAP).
-        Model runs are made hourly, with analysis and hourly forecasts out to 12 hours on the 0, 3, 6, 9, 12, 15,
-        18, and 21Z runs; the other forecast are out to 9 hours.
+      <documentation type="summary">
         Horizontal = 337 by 451 points, resolution 13.545 km, LambertConformal projection.
-        Note that the RAP replaced the Rapid Update Cycle (RUC) model at 12 Z on 01 May 2012.
       </documentation>
     </metadata>
     <filter>
@@ -31,7 +39,7 @@
     </filter>
     <addID />
     <namer>
-      <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RAP CONUS 13km" />
+      <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RR CONUS 13km" />
     </namer>
     <sort>
       <lexigraphicByName increasing="false" />
@@ -41,20 +49,14 @@
   </datasetScan>
 
 
-  <datasetScan name="NCEP-RAP-CONUS_20km" harvest="true" ID="idv/NCEP/RAP/CONUS_20km" path="model/NCEP/RAP/CONUS_20km" location="/data/ldm/pub/native/grid/NCEP/RR/CONUS_20km/">
-    <metadata inherited="true">
-      <dataFormat>GRIB-2</dataFormat>
-      <documentation type="summary">NCEP Model output Rapid Refresh (RAP).
-            Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
-            18, and 21Z runs, also 5, 6, 8, 9, 11, 12 hour forecasts.
-      </documentation>
-    </metadata>
+  <datasetScan name="NCEP-RR-CONUS_20km" harvest="true" ID="idv/NCEP/RR/CONUS_20km" path="model/NCEP/RR/CONUS_20km" location="/data/ldm/pub/native/grid/NCEP/RR/CONUS_20km/">
+    <metadata inherited="true" />
     <filter>
       <include regExp=".*\.grib2$" atomic="true" collection="false" />
     </filter>
     <addID />
     <namer>
-      <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RAP CONUS 20km" />
+      <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RR CONUS 20km" />
     </namer>
     <sort>
       <lexigraphicByName increasing="false" />
@@ -63,13 +65,10 @@
     <addDatasetSize />
   </datasetScan>
 
-  <datasetScan name="NCEP-RAP-CONUS_40km" harvest="true" ID="idv/NCEP/RAP/CONUS_40km" path="model/NCEP/RAP/CONUS_40km" location="/data/ldm/pub/native/grid/NCEP/RR/CONUS_40km/">
+  <datasetScan name="NCEP-RR-CONUS_40km" harvest="true" ID="idv/NCEP/RR/CONUS_40km" path="model/NCEP/RR/CONUS_40km" location="/data/ldm/pub/native/grid/NCEP/RR/CONUS_40km/">
     <metadata inherited="true">
-      <dataFormat>GRIB-2</dataFormat>
-      <documentation type="summary">NCEP Model output Rapid Refresh (RAP) via CONDUIT
-          Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
-          18, and 21Z runs, there are also 4, 5, 6, 7, 8, 9, and 12 hour forecasts.
-          Horizontal = 151 by 113 points, resolution 40.63 km, LambertConformal projection.
+      <documentation type="summary">NCEP Model output Rapid Refresh (RR / RAP) via CONDUIT. Horizontal = 151 by 113 points, 
+        resolution 40.63 km, LambertConformal projection.
       </documentation>
     </metadata>
     <filter>
@@ -77,7 +76,7 @@
     </filter>
     <addID />
     <namer>
-      <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RAP CONUS 40km" />
+      <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RR CONUS 40km" />
     </namer>
     <sort>
       <lexigraphicByName increasing="false" />
