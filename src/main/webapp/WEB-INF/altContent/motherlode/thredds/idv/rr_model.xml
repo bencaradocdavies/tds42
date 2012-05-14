@@ -2,37 +2,24 @@
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
          xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.3">
 
-  <service name="latest" serviceType="Resolver" base=""/>
-
-  <service name="fmrcServices" serviceType="Compound" base="">
-    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
-    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
-    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
-    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
-    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
-    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
-    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
-    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
-    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+  <service name="latest" serviceType="Resolver" base="" />
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
   </service>
-
-  <metadata inherited="true">
-    <documentation type="summary">NCEP Rapid Refresh (RR / RAP) Model: frequently updated short-range weather forecasts.
-      The RAP replaced the Rapid Update Cycle (RUC) model on 01 May 2012 at 12Z.
-      Model runs are made hourly, with analysis and hourly forecasts out to 12 hours on the 0, 3, 6, 9, 12, 15,
-      18, and 21Z runs; analysis and hourly forecasts out to 9 hours are available for the other hourly runs.
-    </documentation>
-    <documentation xlink:href="http://rapidrefresh.noaa.gov/"
-                   xlink:title="ERSRL (Earth System Research Laboratory) documentation"/>
-    <dataFormat>GRIB-2</dataFormat>
-  </metadata>
 
   <datasetScan name="NCEP-RR-CONUS_13km" harvest="true" ID="idv/NCEP/RR/CONUS_13km" path="model/NCEP/RR/CONUS_13km" location="/data/ldm/pub/native/grid/NCEP/RR/CONUS_13km/">
 
     <metadata inherited="true">
-      <documentation type="summary">
+      <documentation type="summary">NCEP Rapid Refresh (RR / RAP) Model: frequently updated short-range weather forecasts.
+        The RAP replaced the Rapid Update Cycle (RUC) model on 01 May 2012 at 12Z.
+        Model runs are made hourly, with analysis and hourly forecasts out to 12 hours on the 0, 3, 6, 9, 12, 15,
+        18, and 21Z runs; analysis and hourly forecasts out to 9 hours are available for the other hourly runs.
         Horizontal = 337 by 451 points, resolution 13.545 km, LambertConformal projection.
       </documentation>
+      <serviceName>all</serviceName>
     </metadata>
     <filter>
       <include regExp=".*\.grib2$" atomic="true" collection="false" />
@@ -50,7 +37,15 @@
 
 
   <datasetScan name="NCEP-RR-CONUS_20km" harvest="true" ID="idv/NCEP/RR/CONUS_20km" path="model/NCEP/RR/CONUS_20km" location="/data/ldm/pub/native/grid/NCEP/RR/CONUS_20km/">
-    <metadata inherited="true" />
+    <metadata inherited="true">
+      <documentation type="summary">NCEP Rapid Refresh (RR / RAP) Model: frequently updated short-range weather forecasts.
+        The RAP replaced the Rapid Update Cycle (RUC) model on 01 May 2012 at 12Z.
+        Model runs are made hourly, with analysis and hourly forecasts out to 12 hours on the 0, 3, 6, 9, 12, 15,
+        18, and 21Z runs; analysis and hourly forecasts out to 9 hours are available for the other hourly runs.
+        LambertConformal projection.
+      </documentation>
+      <serviceName>all</serviceName>
+    </metadata>
     <filter>
       <include regExp=".*\.grib2$" atomic="true" collection="false" />
     </filter>
@@ -67,9 +62,14 @@
 
   <datasetScan name="NCEP-RR-CONUS_40km" harvest="true" ID="idv/NCEP/RR/CONUS_40km" path="model/NCEP/RR/CONUS_40km" location="/data/ldm/pub/native/grid/NCEP/RR/CONUS_40km/">
     <metadata inherited="true">
-      <documentation type="summary">NCEP Model output Rapid Refresh (RR / RAP) via CONDUIT. Horizontal = 151 by 113 points, 
+      <documentation type="summary">NCEP Rapid Refresh (RR / RAP) Model: frequently updated short-range weather forecasts.
+        The RAP replaced the Rapid Update Cycle (RUC) model on 01 May 2012 at 12Z.
+        Model runs are made hourly, with analysis and hourly forecasts out to 12 hours on the 0, 3, 6, 9, 12, 15,
+        18, and 21Z runs; analysis and hourly forecasts out to 9 hours are available for the other hourly runs.
+        NCEP Model output Rapid Refresh (RR / RAP) via CONDUIT. Horizontal = 151 by 113 points, 
         resolution 40.63 km, LambertConformal projection.
       </documentation>
+      <serviceName>all</serviceName>
     </metadata>
     <filter>
       <include regExp=".*\.grib2$" atomic="true" collection="false" />
@@ -84,5 +84,4 @@
     <addLatest />
     <addDatasetSize />
   </datasetScan>
-
 </catalog>
