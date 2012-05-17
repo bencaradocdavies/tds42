@@ -599,7 +599,7 @@
       </featureCollection>
     </dataset>
 
-    <dataset ID="FMRC/NCEP/RR" name="Rapid Refresh (RR / RAP) Model">
+    <dataset ID="FMRC/NCEP/RAP" name="Rapid Refresh (RR / RAP) Model">
       <metadata inherited="true">
         <documentation type="summary">NCEP Rapid Refresh (RR / RAP) Model: frequently updated short-range weather forecasts.
           The RAP replaced the Rapid Update Cycle (RUC) model on 01 May 2012 at 12Z.
@@ -611,7 +611,7 @@
         <dataFormat>GRIB-2</dataFormat>
       </metadata>
 
-      <featureCollection name="NCEP-RR-CONUS_13km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RR/CONUS_13km">
+      <featureCollection name="NCEP-RAP-CONUS_13km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RAP/CONUS_13km">
         <metadata inherited="true">
           <documentation type="summary">Horizontal = 337 by 451 points, resolution 13.545 km, LambertConformal projection.
             Note that the RAP replaced the Rapid Update Cycle (RUC) model at 12 Z on 01 May 2012.
@@ -620,7 +620,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RR/CONUS_13km/RR_CONUS_13km_#yyyyMMdd_HHmm#.grib2"
-            name="RR_CONUS_13km"
+            name="RAP_CONUS_13km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -628,7 +628,7 @@
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
-      <featureCollection name="NCEP-RR-CONUS_20km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RR/CONUS_20km">
+      <featureCollection name="NCEP-RAP-CONUS_20km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RAP/CONUS_20km">
         <metadata inherited="true">
           <documentation type="summary">LambertConformal projection.
             Note that the RAP replaced the Rapid Update Cycle (RUC) model at 12 Z on 01 May 2012.
@@ -636,14 +636,14 @@
         </metadata>
         <collection
               spec="/data/ldm/pub/native/grid/NCEP/RR/CONUS_20km/RR_CONUS_20km_#yyyyMMdd_HHmm#.grib2"
-              name="RR_CONUS_20km"
+              name="RAP_CONUS_20km"
               olderThan="5 min"/>
         <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
-      <featureCollection name="NCEP-RR-CONUS_40km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RR/CONUS_40km">
+      <featureCollection name="NCEP-RAP-CONUS_40km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RAP/CONUS_40km">
         <metadata inherited="true">
           <documentation type="summary">NCEP Model output Rapid Refresh (RR / RAP) via CONDUIT. Horizontal = 151 by 113 
             points, resolution 40.63 km, LambertConformal projection.
@@ -652,7 +652,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RR/CONUS_40km/RR_CONUS_40km_#yyyyMMdd_HHmm#.grib2"
-            name="RR_CONUS_40km"
+            name="RAP_CONUS_40km"
             olderThan="5 min"/>
         <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
