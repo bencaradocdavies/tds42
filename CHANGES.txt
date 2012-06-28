@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2.11: (2012-xx-xx)
+   idv.jnlp sets MaxPermSize, needed for macs.
+
  4.2.10: (2012-04-17)
   new ToolsUI.jnlp file
   ncss barfing when no query string
