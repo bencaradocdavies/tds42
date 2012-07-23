@@ -4,7 +4,7 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.11: (2012-xx-xx)
+ 4.2.11: (2012-07-23)
    idv.jnlp sets MaxPermSize, needed for macs.
 
  4.2.10: (2012-04-17)
