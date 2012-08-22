@@ -1,0 +1,95 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <bean id="tdsContext" class="thredds.server.config.TdsContext">
+        <property name="webappVersion" value="Thredds for WMS testing." />
+        <property name="webappVersionBrief" value="Thredds for WMS testing" />
+        <property name="webappVersionBuildDate" value="N/A" />
+        <property name="contentRootPath" value="../content" />
+        <property name="contentPath" value="." />
+        <property name="startupContentPath" value="../content" />
+        <property name="iddContentPath" value="../content" />
+        <property name="motherlodeContentPath" value="../content" />
+        <property name="tdsConfigFileName" value="threddsConfig.xml" />
+        <property name="serverInfo" ref="serverInfo" />
+        <property name="htmlConfig" ref="htmlConfig" />
+        <property name="wmsConfig" ref="wmsConfig" />
+    </bean>
+
+    <bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
+        <constructor-arg ref="tdsContext" />
+    </bean>
+
+    <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
+
+    <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
+
+    <bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
+        <property name="tdsContext" ref="tdsContext" />
+        <property name="htmlConfig" ref="htmlConfig" />
+    </bean>
+
+    <bean id="htmlConfig" class="thredds.server.config.HtmlConfig">
+        <property name="webappUrl" value="${tds.url}" />
+        <property name="webappDocsUrl" value="${tds.documentation.url}" />
+        <property name="webappLogoUrl" value="${tds.logo.url}" />
+        <property name="webappLogoAlt" value="${tds.logo.alt}" />
+
+        <property name="installUrl" value="${tds.install.url}" />
+    </bean>
+
+    <!-- A Singleton class to initialize the CDM -->
+    <bean name="cdmInit" class="thredds.server.config.CdmInit"
+        destroy-method="destroy" />
+
+    <!-- from wms-servlet.xml -->
+
+    <!-- Configuration of this ncWMS server. -->
+    <bean id="config" class="thredds.server.wms.ThreddsServerConfig">
+        <property name="tdsContext" ref="tdsContext" />
+        <property name="defaultPaletteLocation" value="/WEB-INF/palettes" />
+    </bean>
+    <!-- This Controller will handle all the requests to the WMS -->
+    <bean id="wmsController" class="thredds.server.wms.ThreddsWmsController"
+        init-method="init">
+        <property name="supportedMethods" value="GET" />
+        <property name="serverConfig">
+            <ref local="config" />
+        </property>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true" />
+        <property name="mappings">
+            <value>
+                /wms/** = wmsController
+            </value>
+        </property>
+    </bean>
+
+    <bean id="viewResolver"
+        class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/WEB-INF/jsp/wms/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <!-- Exception Handling: this ensures that all WmsExceptions are returned to 
+        the user as an XML document, created by displayWmsException.jsp. Note that we don't 
+        have to register this anywhere as an exception handler because Spring automagically 
+        detects it. -->
+    <bean id="exceptionResolver"
+        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="uk.ac.rdg.resc.ncwms.exceptions.WmsException">displayWmsException</prop>
+                <prop key="uk.ac.rdg.resc.ncwms.exceptions.Wms1_1_1Exception">displayWms1_1_1Exception</prop>
+                <prop key="uk.ac.rdg.resc.ncwms.exceptions.MetadataException">displayMetadataException</prop>
+            </props>
+        </property>
+        <!-- If an unexpected error occurs (i.e. one that doesn't get expressed as 
+            a WmsException) we will handle it using displayDefaultException.jsp -->
+        <property name="defaultErrorView" value="displayDefaultException" />
+    </bean>
+
+</beans>
