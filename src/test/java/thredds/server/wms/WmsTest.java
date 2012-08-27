@@ -2,6 +2,10 @@ package thredds.server.wms;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
@@ -21,6 +25,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 import thredds.server.config.TdsConfigContextListener;
 import uk.ac.rdg.resc.ncwms.controller.RequestParams;
 import uk.ac.rdg.resc.ncwms.usagelog.UsageLogEntry;
+import uk.ac.rdg.resc.ncwms.wms.Layer;
 
 /**
  * Test Thredds / ncWMS against Laamu Atoll subset netCDF data.
@@ -53,6 +58,16 @@ public class WmsTest {
      * Request bbox.
      */
     private static final String BBOX = "73.35,1.77,73.42,1.84";
+
+    /**
+     * Path of HTTP request.
+     */
+    private static final String SERVLET_REQUEST_URI = "/thredds/wms/laamu/laamu.nc";
+
+    /**
+     * Path of HTTP request with the servlet context removed.
+     */
+    private static final String SERVLET_REQUEST_PATH_INFO = "laamu/laamu.nc";
 
     /**
      * Relative path to directory containing expected WMS response images.
@@ -144,24 +159,54 @@ public class WmsTest {
     /**
      * Read an expected response image from the test data set.
      * 
-     * @param imageFileName
-     *            base file name of image (without directory part)
+     * @param imageFilename
+     *            base filename of image (without directory part)
      * @return expected image.
      */
-    private static BufferedImage readExpected(String imageFileName) {
+    private static BufferedImage readExpected(String imageFilename) {
         try {
             return ImageIO.read(WmsTest.class.getResource(TEST_DATA_EXPECTED
-                    + imageFileName));
+                    + imageFilename));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Build a GetCapabilities servlet request.
+     * 
+     * @return servlet request
+     */
+    private static MockHttpServletRequest buildGetCapabilitiesRequest() {
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest(
+                "GET", SERVLET_REQUEST_URI);
+        servletRequest.setPathInfo(SERVLET_REQUEST_PATH_INFO);
+        servletRequest.addParameter("service", "WMS");
+        servletRequest.addParameter("version", "1.3.0");
+        servletRequest.addParameter("request", "GetCapabilities");
+        return servletRequest;
+    }
+
+    /**
+     * Build a GetMap servlet request.
+     * 
+     * @param layers
+     *            request layers
+     * @param styles
+     *            request styles
+     * @param colorScaleRange
+     *            request colorscalerange
+     * @param bbox
+     *            request bbox
+     * @param expectedImageFilename
+     *            filename of expected response image (without directory part)
+     * @return servlet request
+     */
     private static MockHttpServletRequest buildGetMapRequest(String layers,
             String styles, String colorScaleRange, String bbox) {
         MockHttpServletRequest servletRequest = new MockHttpServletRequest(
-                "GET", "/thredds/wms/laamu/laamu.nc");
-        servletRequest.setPathInfo("laamu/laamu.nc");
+                "GET", SERVLET_REQUEST_URI);
+        servletRequest.setPathInfo(SERVLET_REQUEST_PATH_INFO);
         servletRequest.addParameter("layers", layers);
         servletRequest.addParameter("elevation", "0");
         servletRequest.addParameter("time", "1970-01-01T00:00:00");
@@ -182,8 +227,22 @@ public class WmsTest {
         return servletRequest;
     }
 
-    private void runTest(String layers, String styles, String colorScaleRange,
-            String bbox, String expectedImageFileName) {
+    /**
+     * Run a WMS GetMap test.
+     * 
+     * @param layers
+     *            request layers
+     * @param styles
+     *            request styles
+     * @param colorScaleRange
+     *            request colorscalerange
+     * @param bbox
+     *            request bbox
+     * @param expectedImageFilename
+     *            filename of expected response image (without directory part)
+     */
+    private void runGetMapTest(String layers, String styles,
+            String colorScaleRange, String bbox, String expectedImageFilename) {
         String request = "GetMap";
         MockHttpServletRequest servletRequest = buildGetMapRequest(layers,
                 styles, colorScaleRange, bbox);
@@ -198,9 +257,8 @@ public class WmsTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        BufferedImage expectedImage = readExpected(expectedImageFileName);
+        BufferedImage expectedImage = readExpected(expectedImageFilename);
         assertEquivalent(expectedImage, responseImage);
-
     }
 
     /**
@@ -239,12 +297,43 @@ public class WmsTest {
     }
 
     /**
+     * Test WMS GetCapabilities request.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getCapabilities() {
+        String request = "GetCapabilities";
+        MockHttpServletRequest servletRequest = buildGetCapabilitiesRequest();
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+        Map<String, Object> models;
+        try {
+            models = wmsController.dispatchWmsRequest(request,
+                    new RequestParams(servletRequest.getParameterMap()),
+                    servletRequest, servletResponse,
+                    new UsageLogEntry(servletRequest)).getModelMap();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Set<Layer> layers = ((List<ThreddsDataset>) models.get("datasets"))
+                .get(0).getLayers();
+        Map<String, Layer> namedLayers = new HashMap<String, Layer>();
+        for (Layer layer : layers) {
+            namedLayers.put(layer.getName(), layer);
+        }
+        Assert.assertTrue(namedLayers.containsKey("Band1"));
+        Assert.assertTrue(namedLayers.containsKey("Band4"));
+        Assert.assertTrue(namedLayers.containsKey("Band7"));
+        Assert.assertTrue(namedLayers.containsKey("False741"));
+        Assert.assertTrue(namedLayers.containsKey("FalseColour741"));
+    }
+
+    /**
      * Test WMS GetMap request for Band1.
      */
     @Test
     public void getMapBand1() {
-        runTest("Band1", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE, BBOX,
-                "Band1.png");
+        runGetMapTest("Band1", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE,
+                BBOX, "Band1.png");
     }
 
     /**
@@ -252,8 +341,8 @@ public class WmsTest {
      */
     @Test
     public void getMapBand4() {
-        runTest("Band4", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE, BBOX,
-                "Band4.png");
+        runGetMapTest("Band4", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE,
+                BBOX, "Band4.png");
     }
 
     /**
@@ -261,8 +350,8 @@ public class WmsTest {
      */
     @Test
     public void getMapBand7() {
-        runTest("Band7", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE, BBOX,
-                "Band7.png");
+        runGetMapTest("Band7", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE,
+                BBOX, "Band7.png");
     }
 
     /**
@@ -270,7 +359,7 @@ public class WmsTest {
      */
     @Test
     public void getMapFalse741() {
-        runTest("False741", FALSE_STYLES, FALSE_COLORSCALERANGE, BBOX,
+        runGetMapTest("False741", FALSE_STYLES, FALSE_COLORSCALERANGE, BBOX,
                 "False741.png");
     }
 
@@ -280,8 +369,8 @@ public class WmsTest {
      */
     @Test
     public void getMapFalseColour741() {
-        runTest("FalseColour741", FALSE_STYLES, FALSE_COLORSCALERANGE, BBOX,
-                "FalseColour741.png");
+        runGetMapTest("FalseColour741", FALSE_STYLES, FALSE_COLORSCALERANGE,
+                BBOX, "FalseColour741.png");
     }
 
 }
