@@ -2,6 +2,8 @@ package thredds.server.wms;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,9 @@ import uk.ac.rdg.resc.ncwms.wms.Layer;
  * @author Ben Caradoc-Davies, CSIRO Earth Science and Resource Engineering
  */
 public class WmsTest {
+
+    private static final boolean SAVE_RESPONSE_IMAGES = true;
+    private static final String RESPONSE_IMAGE_SAVE_PREFIX = "/tmp/";
 
     /**
      * Request styles for greyscale bands.
@@ -254,6 +259,12 @@ public class WmsTest {
                     servletResponse, new UsageLogEntry(servletRequest));
             responseImage = ImageIO.read(new ByteArrayInputStream(
                     servletResponse.getContentAsByteArray()));
+            if (SAVE_RESPONSE_IMAGES) {
+                OutputStream out = new FileOutputStream(
+                        RESPONSE_IMAGE_SAVE_PREFIX + expectedImageFilename);
+                out.write(servletResponse.getContentAsByteArray());
+                out.close();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

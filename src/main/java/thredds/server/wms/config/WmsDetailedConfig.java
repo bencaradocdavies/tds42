@@ -217,7 +217,7 @@ public class WmsDetailedConfig
      * pattern in the config file "wins" (crudely, this is probably the most
      * precise match).
      */
-    private DatasetPathSettings getBestDatasetPathMatch(String urlPath)
+    public DatasetPathSettings getBestDatasetPathMatch(String urlPath)
     {
         // First look for an exact match (small optimization)
         DatasetPathSettings settings = this.datasetPaths.get(urlPath);

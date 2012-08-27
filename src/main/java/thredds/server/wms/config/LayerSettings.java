@@ -47,6 +47,9 @@ public class LayerSettings
     private String defaultPaletteName =  null;
     private Boolean logScaling = null;
     private Integer defaultNumColorBands = null;
+    private String redLayer = null;
+    private String greenLayer = null;
+    private String blueLayer = null;
 
     LayerSettings(Element parentElement) throws WmsConfigException
     {
@@ -63,6 +66,9 @@ public class LayerSettings
         this.defaultNumColorBands = getInteger(parentElement, "defaultNumColorBands",
                 Ranges.newRange(5, ColorPalette.MAX_NUM_COLOURS));
         this.logScaling = getBoolean(parentElement, "logScaling");
+        this.redLayer = parentElement.getChildTextTrim("redLayer");
+        this.greenLayer = parentElement.getChildTextTrim("greenLayer");
+        this.blueLayer = parentElement.getChildTextTrim("blueLayer");
     }
 
     /** Package-private constructor, sets all fields to null */
@@ -139,6 +145,22 @@ public class LayerSettings
         return defaultNumColorBands;
     }
 
+    public String getRedLayer() {
+        return redLayer;
+    }
+
+    public String getGreenLayer() {
+        return greenLayer;
+    }
+
+    public String getBlueLayer() {
+        return blueLayer;
+    }
+
+    public boolean isFalseColor() {
+        return redLayer != null && greenLayer != null && blueLayer != null;
+    }
+
     /**
      * Replaces all unset values in this object with values from the given
      * LayerSettings object.
@@ -150,6 +172,9 @@ public class LayerSettings
         if (this.defaultPaletteName == null) this.defaultPaletteName = newSettings.defaultPaletteName;
         if (this.logScaling == null) this.logScaling = newSettings.logScaling;
         if (this.defaultNumColorBands == null) this.defaultNumColorBands = newSettings.defaultNumColorBands;
+        if (this.redLayer == null) this.redLayer = newSettings.redLayer;
+        if (this.greenLayer == null) this.greenLayer = newSettings.greenLayer;
+        if (this.blueLayer == null) this.blueLayer = newSettings.blueLayer;
     }
 
     void setDefaultColorScaleRange(Range<Float> defaultColorScaleRange)
@@ -158,9 +183,16 @@ public class LayerSettings
     }
 
     @Override
-    public String toString()
-    {
-        return String.format("allowFeatureInfo = %s, defaultColorScaleRange = %s, defaultPaletteName = %s, defaultNumColorBands = %s, logScaling = %s",
-            this.allowFeatureInfo , this.defaultColorScaleRange, this.defaultPaletteName, this.defaultNumColorBands, this.logScaling);
+    public String toString() {
+        return String
+                .format("allowFeatureInfo = %s, defaultColorScaleRange = %s, "
+                        + "defaultPaletteName = %s, defaultNumColorBands = %s, "
+                        + "logScaling = %s, "
+                        + "redLayer = %s, greenLayer = %s, blueLayer = %s",
+                        this.allowFeatureInfo, this.defaultColorScaleRange,
+                        this.defaultPaletteName, this.defaultNumColorBands,
+                        this.logScaling, this.redLayer, this.greenLayer,
+                        this.blueLayer);
     }
+
 }
