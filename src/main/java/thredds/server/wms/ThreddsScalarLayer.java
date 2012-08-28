@@ -59,7 +59,7 @@ import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
  * @todo Implement more efficient getTimeseries()
  * @author Jon
  */
-class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
+public class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
 {
     private GridDatatype grid;
     private ThreddsDataset dataset;
@@ -83,6 +83,7 @@ class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
     public ThreddsDataset getDataset() { return this.dataset; }
     public void setDataset( ThreddsDataset dataset) { this.dataset = dataset; }
 
+    public GridDatatype getGridDatatype() { return this.grid; }
     public void setGridDatatype(GridDatatype grid) { this.grid = grid; }
 
   @Override

@@ -30,7 +30,8 @@ for more information.
 
 <!ELEMENT variables (variable*)>
 
-<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?,
+                    redComponent?, greenComponent?, blueComponent?)>
 <!ATTLIST variable id CDATA #REQUIRED>
 
 <!ELEMENT allowFeatureInfo (#PCDATA)>
@@ -38,6 +39,9 @@ for more information.
 <!ELEMENT defaultPaletteName (#PCDATA)>
 <!ELEMENT defaultNumColorBands (#PCDATA)>
 <!ELEMENT logScaling (#PCDATA)>
+<!ELEMENT redComponent (#PCDATA)>
+<!ELEMENT greenComponent (#PCDATA)>
+<!ELEMENT blueComponent (#PCDATA)>
 ]>
 <wmsConfig>
 
@@ -68,6 +72,11 @@ for more information.
                 <variable id="False741">
                     <defaultColorScaleRange>0.5 252.5</defaultColorScaleRange>
                     <defaultPaletteName>rgb252</defaultPaletteName>
+                </variable>
+                <variable id="FalseColour741">
+                    <redComponent>Band7</redComponent>
+                    <greenComponent>Band4</greenComponent>
+                    <blueComponent>Band1</blueComponent>
                 </variable>
             </variables>
         </datasetPath>

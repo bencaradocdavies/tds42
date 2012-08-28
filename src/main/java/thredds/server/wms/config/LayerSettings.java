@@ -47,6 +47,9 @@ public class LayerSettings
     private String defaultPaletteName =  null;
     private Boolean logScaling = null;
     private Integer defaultNumColorBands = null;
+    private String redComponent = null;
+    private String greenComponent = null;
+    private String blueComponent = null;
 
     LayerSettings(Element parentElement) throws WmsConfigException
     {
@@ -63,6 +66,13 @@ public class LayerSettings
         this.defaultNumColorBands = getInteger(parentElement, "defaultNumColorBands",
                 Ranges.newRange(5, ColorPalette.MAX_NUM_COLOURS));
         this.logScaling = getBoolean(parentElement, "logScaling");
+        this.redComponent = parentElement.getChildTextTrim("redComponent");
+        this.greenComponent = parentElement.getChildTextTrim("greenComponent");
+        this.blueComponent = parentElement.getChildTextTrim("blueComponent");
+        if (!isFalseColor()
+                && (this.redComponent != null || this.greenComponent != null || this.blueComponent != null)) {
+            throw new WmsConfigException("Either all or none of redComponent, greenComponent, and blueComponent must be given");
+        }
     }
 
     /** Package-private constructor, sets all fields to null */
@@ -139,6 +149,22 @@ public class LayerSettings
         return defaultNumColorBands;
     }
 
+    public String getRedComponent() {
+        return redComponent;
+    }
+
+    public String getGreenComponent() {
+        return greenComponent;
+    }
+
+    public String getBlueComponent() {
+        return blueComponent;
+    }
+
+    public boolean isFalseColor() {
+        return redComponent != null && greenComponent != null && blueComponent != null;
+    }
+
     /**
      * Replaces all unset values in this object with values from the given
      * LayerSettings object.
@@ -150,6 +176,9 @@ public class LayerSettings
         if (this.defaultPaletteName == null) this.defaultPaletteName = newSettings.defaultPaletteName;
         if (this.logScaling == null) this.logScaling = newSettings.logScaling;
         if (this.defaultNumColorBands == null) this.defaultNumColorBands = newSettings.defaultNumColorBands;
+        if (this.redComponent == null) this.redComponent = newSettings.redComponent;
+        if (this.greenComponent == null) this.greenComponent = newSettings.greenComponent;
+        if (this.blueComponent == null) this.blueComponent = newSettings.blueComponent;
     }
 
     void setDefaultColorScaleRange(Range<Float> defaultColorScaleRange)
@@ -158,9 +187,16 @@ public class LayerSettings
     }
 
     @Override
-    public String toString()
-    {
-        return String.format("allowFeatureInfo = %s, defaultColorScaleRange = %s, defaultPaletteName = %s, defaultNumColorBands = %s, logScaling = %s",
-            this.allowFeatureInfo , this.defaultColorScaleRange, this.defaultPaletteName, this.defaultNumColorBands, this.logScaling);
+    public String toString() {
+        return String
+                .format("allowFeatureInfo = %s, defaultColorScaleRange = %s, "
+                        + "defaultPaletteName = %s, defaultNumColorBands = %s, "
+                        + "logScaling = %s, "
+                        + "redLayer = %s, greenLayer = %s, blueLayer = %s",
+                        this.allowFeatureInfo, this.defaultColorScaleRange,
+                        this.defaultPaletteName, this.defaultNumColorBands,
+                        this.logScaling, this.redComponent, this.greenComponent,
+                        this.blueComponent);
     }
+
 }

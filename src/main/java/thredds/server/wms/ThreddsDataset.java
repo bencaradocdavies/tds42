@@ -32,7 +32,21 @@
 
 package thredds.server.wms;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import thredds.server.wms.config.DatasetPathSettings;
+import thredds.server.wms.config.LayerSettings;
+import thredds.server.wms.config.WmsDetailedConfig;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -45,9 +59,6 @@ import uk.ac.rdg.resc.ncwms.wms.Dataset;
 import uk.ac.rdg.resc.ncwms.wms.Layer;
 import uk.ac.rdg.resc.ncwms.wms.VectorLayer;
 
-import java.util.*;
-import thredds.server.wms.config.WmsDetailedConfig;
-
 /**
  * A {@link uk.ac.rdg.resc.ncwms.wms.Dataset} that provides access to layers read from
  * {@link ucar.nc2.dataset.NetcdfDataset} objects.
@@ -56,6 +67,8 @@ import thredds.server.wms.config.WmsDetailedConfig;
  */
 public class ThreddsDataset implements Dataset
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThreddsDataset.class);
 
   private final String urlPath;
   private final String title;
@@ -103,6 +116,12 @@ public class ThreddsDataset implements Dataset
 
     // Now load the scalar layers
     CdmUtils.findAndUpdateLayers( gridDataset, THREDDS_LAYER_BUILDER, this.scalarLayers );
+
+    // Add the false colour layers
+    for (ThreddsFalseColorLayer layer : findFalseColorLayers(wmsConfig)) {
+        this.scalarLayers.put(layer.getId(), layer);
+    }
+
     // Set the extra properties of each layer
     for ( ThreddsScalarLayer layer : this.scalarLayers.values() )
     {
@@ -123,6 +142,66 @@ public class ThreddsDataset implements Dataset
       this.vectorLayers.put( vecLayer.getId(), tdsVecLayer );
     }
   }
+
+    /**
+     * Examine the WMS config for variable settings that define false colour
+     * layers and create them.
+     * 
+     * @param wmsConfig
+     *            the WMS settings to be examined
+     * @return list of false colour layers
+     */
+    private List<ThreddsFalseColorLayer> findFalseColorLayers(
+            WmsDetailedConfig wmsConfig) {
+        List<ThreddsFalseColorLayer> falseColorLayers = new ArrayList<ThreddsFalseColorLayer>();
+        DatasetPathSettings settings = wmsConfig
+                .getBestDatasetPathMatch(urlPath);
+        if (settings != null) {
+            Map<String, LayerSettings> settingsPerVariable = settings
+                    .getSettingsPerVariable();
+            for (String layer : settingsPerVariable.keySet()) {
+                LayerSettings layerSettings = settingsPerVariable.get(layer);
+                if (layerSettings.isFalseColor()) {
+                    ThreddsScalarLayer redComponent = scalarLayers
+                            .get(layerSettings.getRedComponent());
+                    ThreddsScalarLayer greenComponent = scalarLayers
+                            .get(layerSettings.getGreenComponent());
+                    ThreddsScalarLayer blueComponent = scalarLayers
+                            .get(layerSettings.getBlueComponent());
+                    if (redComponent == null || greenComponent == null
+                            || blueComponent == null) {
+                        StringBuilder missingComponents = new StringBuilder();
+                        if (redComponent == null) {
+                            missingComponents.append(" ");
+                            missingComponents.append(layerSettings
+                                    .getRedComponent());
+                        }
+                        if (greenComponent == null) {
+                            missingComponents.append(" ");
+                            missingComponents.append(layerSettings
+                                    .getGreenComponent());
+                        }
+                        if (blueComponent == null) {
+                            missingComponents.append(" ");
+                            missingComponents.append(layerSettings
+                                    .getBlueComponent());
+                        }
+                        LOGGER.warn(String.format("Skipped false colour layer"
+                                + " %s (Red=%s, Green=%s, Blue=%s)"
+                                + " with missing component:%s", layer,
+                                layerSettings.getRedComponent(),
+                                layerSettings.getGreenComponent(),
+                                layerSettings.getBlueComponent(),
+                                missingComponents.toString()));
+                    } else {
+                        falseColorLayers.add(new ThreddsFalseColorLayer(layer,
+                                redComponent, greenComponent, blueComponent));
+                    }
+                }
+            }
+        }
+        return falseColorLayers;
+    }
 
   /**
    * Uses the {@link #getDatasetPath() url path} as the unique id.

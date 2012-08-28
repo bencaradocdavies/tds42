@@ -2,6 +2,8 @@ package thredds.server.wms;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,19 @@ import uk.ac.rdg.resc.ncwms.wms.Layer;
 public class WmsTest {
 
     /**
+     * Should GetMap response images be saved? Useful for bootstrapping and
+     * debugging.
+     */
+    private static final boolean SAVE_GETMAP_RESPONSE_IMAGES = false;
+
+    /**
+     * GetMap response images are saved to this path. The filename is made by
+     * appending the expected filename, so this should end with a separator
+     * character.
+     */
+    private static final String GETMAP_RESPONSE_IMAGE_SAVE_PREFIX = "/tmp/";
+
+    /**
      * Request styles for greyscale bands.
      */
     private static final String GREYSCALE_STYLES = "boxfill/greyscale";
@@ -55,9 +70,14 @@ public class WmsTest {
     private static final String FALSE_COLORSCALERANGE = "0.5,252.5";
 
     /**
-     * Request bbox.
+     * Standard request bbox.
      */
-    private static final String BBOX = "73.35,1.77,73.42,1.84";
+    private static final String STANDARD_BBOX = "73.35,1.77,73.42,1.84";
+
+    /**
+     * Offset request bbox to test transparency.
+     */
+    private static final String OFFSET_BBOX = "73.37,1.79,73.44,1.86";
 
     /**
      * Path of HTTP request.
@@ -254,6 +274,13 @@ public class WmsTest {
                     servletResponse, new UsageLogEntry(servletRequest));
             responseImage = ImageIO.read(new ByteArrayInputStream(
                     servletResponse.getContentAsByteArray()));
+            if (SAVE_GETMAP_RESPONSE_IMAGES) {
+                OutputStream out = new FileOutputStream(
+                        GETMAP_RESPONSE_IMAGE_SAVE_PREFIX
+                                + expectedImageFilename);
+                out.write(servletResponse.getContentAsByteArray());
+                out.close();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -333,7 +360,7 @@ public class WmsTest {
     @Test
     public void getMapBand1() {
         runGetMapTest("Band1", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE,
-                BBOX, "Band1.png");
+                STANDARD_BBOX, "Band1.png");
     }
 
     /**
@@ -342,7 +369,7 @@ public class WmsTest {
     @Test
     public void getMapBand4() {
         runGetMapTest("Band4", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE,
-                BBOX, "Band4.png");
+                STANDARD_BBOX, "Band4.png");
     }
 
     /**
@@ -351,7 +378,7 @@ public class WmsTest {
     @Test
     public void getMapBand7() {
         runGetMapTest("Band7", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE,
-                BBOX, "Band7.png");
+                STANDARD_BBOX, "Band7.png");
     }
 
     /**
@@ -359,8 +386,8 @@ public class WmsTest {
      */
     @Test
     public void getMapFalse741() {
-        runGetMapTest("False741", FALSE_STYLES, FALSE_COLORSCALERANGE, BBOX,
-                "False741.png");
+        runGetMapTest("False741", FALSE_STYLES, FALSE_COLORSCALERANGE,
+                STANDARD_BBOX, "False741.png");
     }
 
     /**
@@ -370,7 +397,60 @@ public class WmsTest {
     @Test
     public void getMapFalseColour741() {
         runGetMapTest("FalseColour741", FALSE_STYLES, FALSE_COLORSCALERANGE,
-                BBOX, "FalseColour741.png");
+                STANDARD_BBOX, "FalseColour741.png");
+    }
+
+    /**
+     * Test WMS GetMap request for FalseColour741 with offset bbox so part of
+     * the image is transparent.
+     */
+    @Test
+    public void getMapFalseColour741OffsetBbox() {
+        runGetMapTest("FalseColour741", FALSE_STYLES, FALSE_COLORSCALERANGE,
+                OFFSET_BBOX, "FalseColour741OffsetBbox.png");
+    }
+
+    /**
+     * Test WMS GetFeatureInfo request for FalseColour741.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getFeatureInfoFalseColour741() {
+        String request = "GetFeatureInfo";
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest(
+                "GET", SERVLET_REQUEST_URI);
+        servletRequest.setPathInfo(SERVLET_REQUEST_PATH_INFO);
+        servletRequest.addParameter("layers", "FalseColour741");
+        servletRequest.addParameter("query_layers", "FalseColour741");
+        servletRequest.addParameter("elevation", "0");
+        servletRequest.addParameter("time", "1970-01-01T00:00:00");
+        servletRequest.addParameter("transparent", "true");
+        servletRequest.addParameter("styles", FALSE_STYLES);
+        servletRequest.addParameter("crs", "EPSG:4326");
+        servletRequest.addParameter("colorscalerange", FALSE_COLORSCALERANGE);
+        servletRequest.addParameter("numcolorbands", "252");
+        servletRequest.addParameter("logscale", "false");
+        servletRequest.addParameter("service", "WMS");
+        servletRequest.addParameter("version", "1.3.0");
+        servletRequest.addParameter("request", "GetFeatureInfo");
+        servletRequest.addParameter("exceptions", "XML");
+        servletRequest.addParameter("info_format", "text/xml");
+        servletRequest.addParameter("bbox", STANDARD_BBOX);
+        servletRequest.addParameter("width", "512");
+        servletRequest.addParameter("height", "512");
+        servletRequest.addParameter("i", "256");
+        servletRequest.addParameter("j", "256");
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+        Map<String, Object> models;
+        try {
+            models = wmsController.dispatchWmsRequest(request,
+                    new RequestParams(servletRequest.getParameterMap()),
+                    servletRequest, servletResponse,
+                    new UsageLogEntry(servletRequest)).getModelMap();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Assert.assertTrue(models.containsKey("data"));
     }
 
 }

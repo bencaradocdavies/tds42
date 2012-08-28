@@ -42,7 +42,7 @@ import org.jdom.xpath.XPath;
  * LayerSettings for a certain dataset path
  * @author Jon
  */
-class DatasetPathSettings {
+public class DatasetPathSettings {
     
     private final String pathSpec;
     private final Pattern pathSpecPattern;
