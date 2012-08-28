@@ -69,6 +69,10 @@ public class LayerSettings
         this.redComponent = parentElement.getChildTextTrim("redComponent");
         this.greenComponent = parentElement.getChildTextTrim("greenComponent");
         this.blueComponent = parentElement.getChildTextTrim("blueComponent");
+        if (!isFalseColor()
+                && (this.redComponent != null || this.greenComponent != null || this.blueComponent != null)) {
+            throw new WmsConfigException("Either all or none of redComponent, greenComponent, and blueComponent must be given");
+        }
     }
 
     /** Package-private constructor, sets all fields to null */

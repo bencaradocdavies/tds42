@@ -154,26 +154,29 @@ public class ThreddsDataset implements Dataset
             for (String layer : settingsPerVariable.keySet()) {
                 LayerSettings layerSettings = settingsPerVariable.get(layer);
                 if (layerSettings.isFalseColor()) {
-                    ThreddsScalarLayer redLayer = scalarLayers
+                    ThreddsScalarLayer redComponent = scalarLayers
                             .get(layerSettings.getRedComponent());
-                    ThreddsScalarLayer greenLayer = scalarLayers
+                    ThreddsScalarLayer greenComponent = scalarLayers
                             .get(layerSettings.getGreenComponent());
-                    ThreddsScalarLayer blueLayer = scalarLayers
+                    ThreddsScalarLayer blueComponent = scalarLayers
                             .get(layerSettings.getBlueComponent());
-                    if (redLayer == null || greenLayer == null
-                            || blueLayer == null) {
-                        StringBuilder missingLayers = new StringBuilder();
-                        if (redLayer == null) {
-                            missingLayers.append(" ");
-                            missingLayers.append(layerSettings.getRedComponent());
+                    if (redComponent == null || greenComponent == null
+                            || blueComponent == null) {
+                        StringBuilder missingComponents = new StringBuilder();
+                        if (redComponent == null) {
+                            missingComponents.append(" ");
+                            missingComponents.append(layerSettings
+                                    .getRedComponent());
                         }
-                        if (greenLayer == null) {
-                            missingLayers.append(" ");
-                            missingLayers.append(layerSettings.getGreenComponent());
+                        if (greenComponent == null) {
+                            missingComponents.append(" ");
+                            missingComponents.append(layerSettings
+                                    .getGreenComponent());
                         }
-                        if (blueLayer == null) {
-                            missingLayers.append(" ");
-                            missingLayers.append(layerSettings.getBlueComponent());
+                        if (blueComponent == null) {
+                            missingComponents.append(" ");
+                            missingComponents.append(layerSettings
+                                    .getBlueComponent());
                         }
                         LOGGER.warn(String.format("Skipped false colour layer"
                                 + " %s (Red=%s, Green=%s, Blue=%s)"
@@ -181,10 +184,10 @@ public class ThreddsDataset implements Dataset
                                 layerSettings.getRedComponent(),
                                 layerSettings.getGreenComponent(),
                                 layerSettings.getBlueComponent(),
-                                missingLayers.toString()));
+                                missingComponents.toString()));
                     } else {
                         falseColorLayers.add(new ThreddsFalseColorLayer(layer,
-                                redLayer, greenLayer, blueLayer));
+                                redComponent, greenComponent, blueComponent));
                     }
                 }
             }
