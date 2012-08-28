@@ -83,6 +83,7 @@ public class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLa
     public ThreddsDataset getDataset() { return this.dataset; }
     public void setDataset( ThreddsDataset dataset) { this.dataset = dataset; }
 
+    public GridDatatype getGridDatatype() { return this.grid; }
     public void setGridDatatype(GridDatatype grid) { this.grid = grid; }
 
   @Override

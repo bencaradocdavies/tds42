@@ -410,4 +410,47 @@ public class WmsTest {
                 OFFSET_BBOX, "FalseColour741OffsetBbox.png");
     }
 
+    /**
+     * Test WMS GetFeatureInfo request for FalseColour741.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getFeatureInfoFalseColour741() {
+        String request = "GetFeatureInfo";
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest(
+                "GET", SERVLET_REQUEST_URI);
+        servletRequest.setPathInfo(SERVLET_REQUEST_PATH_INFO);
+        servletRequest.addParameter("layers", "FalseColour741");
+        servletRequest.addParameter("query_layers", "FalseColour741");
+        servletRequest.addParameter("elevation", "0");
+        servletRequest.addParameter("time", "1970-01-01T00:00:00");
+        servletRequest.addParameter("transparent", "true");
+        servletRequest.addParameter("styles", FALSE_STYLES);
+        servletRequest.addParameter("crs", "EPSG:4326");
+        servletRequest.addParameter("colorscalerange", FALSE_COLORSCALERANGE);
+        servletRequest.addParameter("numcolorbands", "252");
+        servletRequest.addParameter("logscale", "false");
+        servletRequest.addParameter("service", "WMS");
+        servletRequest.addParameter("version", "1.3.0");
+        servletRequest.addParameter("request", "GetFeatureInfo");
+        servletRequest.addParameter("exceptions", "XML");
+        servletRequest.addParameter("info_format", "text/xml");
+        servletRequest.addParameter("bbox", STANDARD_BBOX);
+        servletRequest.addParameter("width", "512");
+        servletRequest.addParameter("height", "512");
+        servletRequest.addParameter("i", "256");
+        servletRequest.addParameter("j", "256");
+        MockHttpServletResponse servletResponse = new MockHttpServletResponse();
+        Map<String, Object> models;
+        try {
+            models = wmsController.dispatchWmsRequest(request,
+                    new RequestParams(servletRequest.getParameterMap()),
+                    servletRequest, servletResponse,
+                    new UsageLogEntry(servletRequest)).getModelMap();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Assert.assertTrue(models.containsKey("data"));
+    }
+
 }

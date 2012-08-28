@@ -1,5 +1,13 @@
 package thredds.server.wms;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.joda.time.DateTime;
+
+import uk.ac.rdg.resc.ncwms.coords.HorizontalPosition;
+import uk.ac.rdg.resc.ncwms.exceptions.InvalidDimensionValueException;
 import uk.ac.rdg.resc.ncwms.wms.FalseColorLayer;
 
 /**
@@ -48,7 +56,9 @@ public class ThreddsFalseColorLayer extends ThreddsScalarLayer implements
                 redComponent.getId(), greenComponent.getId(),
                 blueComponent.getId()));
         setLayerAbstract(getTitle());
+        setHorizontalCoordSys(redComponent.getHorizontalCoordSys());
         setGeographicBoundingBox(redComponent.getGeographicBoundingBox());
+        setGridDatatype(redComponent.getGridDatatype());
         setTimeValues(redComponent.getTimeValues());
     }
 
@@ -71,6 +81,37 @@ public class ThreddsFalseColorLayer extends ThreddsScalarLayer implements
      */
     public ThreddsScalarLayer getBlueComponent() {
         return blueComponent;
+    }
+
+    /**
+     * Return null for reading a single point.
+     * 
+     * @see thredds.server.wms.ThreddsScalarLayer#readSinglePoint(org.joda.time.DateTime,
+     *      double, uk.ac.rdg.resc.ncwms.coords.HorizontalPosition)
+     */
+    @Override
+    public Float readSinglePoint(DateTime time, double elevation,
+            HorizontalPosition xy) throws InvalidDimensionValueException,
+            IOException {
+        return null;
+    }
+
+    /**
+     * Return a list of nulls for reading a timeseries.
+     * 
+     * @see uk.ac.rdg.resc.ncwms.wms.AbstractScalarLayer#readTimeseries(java.util
+     *      .List, double, uk.ac.rdg.resc.ncwms.coords.HorizontalPosition)
+     */
+    @SuppressWarnings("unused")
+    @Override
+    public List<Float> readTimeseries(List<DateTime> times, double elevation,
+            HorizontalPosition xy) throws InvalidDimensionValueException,
+            IOException {
+        List<Float> values = new ArrayList<Float>(times.size());
+        for (DateTime st : times) {
+            values.add(null);
+        }
+        return values;
     }
 
 }
