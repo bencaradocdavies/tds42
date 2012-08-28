@@ -1,3 +1,11 @@
+# A custom 6x7x6 (252 colour) RGB palette suitable for approximating
+# false colour satellite imagery.
+#
+# For example, if red, green, and blue components are ubyte variables
+# Band7, Band4, and Band1 in a NetCDF 4 file then a false colour variable
+# that indexes this palette can be created with:
+# ncap2 -h -s "False741=ubyte((Band7+42)/43+6*((Band4+36)/37)+42*((Band1+42)/43)-48)" infile.nc outfile.nc
+#
 22 19 22
 65 19 22
 108 19 22
