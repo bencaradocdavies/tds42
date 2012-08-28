@@ -36,8 +36,18 @@ import uk.ac.rdg.resc.ncwms.wms.Layer;
  */
 public class WmsTest {
 
-    private static final boolean SAVE_RESPONSE_IMAGES = true;
-    private static final String RESPONSE_IMAGE_SAVE_PREFIX = "/tmp/";
+    /**
+     * Should GetMap response images be saved? Useful for bootstrapping and
+     * debugging.
+     */
+    private static final boolean SAVE_GETMAP_RESPONSE_IMAGES = false;
+
+    /**
+     * GetMap response images are saved to this path. The filename is made by
+     * appending the expected filename, so this should end with a separator
+     * character.
+     */
+    private static final String GETMAP_RESPONSE_IMAGE_SAVE_PREFIX = "/tmp/";
 
     /**
      * Request styles for greyscale bands.
@@ -60,9 +70,14 @@ public class WmsTest {
     private static final String FALSE_COLORSCALERANGE = "0.5,252.5";
 
     /**
-     * Request bbox.
+     * Standard request bbox.
      */
-    private static final String BBOX = "73.35,1.77,73.42,1.84";
+    private static final String STANDARD_BBOX = "73.35,1.77,73.42,1.84";
+
+    /**
+     * Offset request bbox to test transparency.
+     */
+    private static final String OFFSET_BBOX = "73.37,1.79,73.44,1.86";
 
     /**
      * Path of HTTP request.
@@ -259,9 +274,10 @@ public class WmsTest {
                     servletResponse, new UsageLogEntry(servletRequest));
             responseImage = ImageIO.read(new ByteArrayInputStream(
                     servletResponse.getContentAsByteArray()));
-            if (SAVE_RESPONSE_IMAGES) {
+            if (SAVE_GETMAP_RESPONSE_IMAGES) {
                 OutputStream out = new FileOutputStream(
-                        RESPONSE_IMAGE_SAVE_PREFIX + expectedImageFilename);
+                        GETMAP_RESPONSE_IMAGE_SAVE_PREFIX
+                                + expectedImageFilename);
                 out.write(servletResponse.getContentAsByteArray());
                 out.close();
             }
@@ -344,7 +360,7 @@ public class WmsTest {
     @Test
     public void getMapBand1() {
         runGetMapTest("Band1", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE,
-                BBOX, "Band1.png");
+                STANDARD_BBOX, "Band1.png");
     }
 
     /**
@@ -353,7 +369,7 @@ public class WmsTest {
     @Test
     public void getMapBand4() {
         runGetMapTest("Band4", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE,
-                BBOX, "Band4.png");
+                STANDARD_BBOX, "Band4.png");
     }
 
     /**
@@ -362,7 +378,7 @@ public class WmsTest {
     @Test
     public void getMapBand7() {
         runGetMapTest("Band7", GREYSCALE_STYLES, GREYSCALE_COLORSCALERANGE,
-                BBOX, "Band7.png");
+                STANDARD_BBOX, "Band7.png");
     }
 
     /**
@@ -370,8 +386,8 @@ public class WmsTest {
      */
     @Test
     public void getMapFalse741() {
-        runGetMapTest("False741", FALSE_STYLES, FALSE_COLORSCALERANGE, BBOX,
-                "False741.png");
+        runGetMapTest("False741", FALSE_STYLES, FALSE_COLORSCALERANGE,
+                STANDARD_BBOX, "False741.png");
     }
 
     /**
@@ -381,7 +397,17 @@ public class WmsTest {
     @Test
     public void getMapFalseColour741() {
         runGetMapTest("FalseColour741", FALSE_STYLES, FALSE_COLORSCALERANGE,
-                BBOX, "FalseColour741.png");
+                STANDARD_BBOX, "FalseColour741.png");
+    }
+
+    /**
+     * Test WMS GetMap request for FalseColour741 with offset bbox so part of
+     * the image is transparent.
+     */
+    @Test
+    public void getMapFalseColour741OffsetBbox() {
+        runGetMapTest("FalseColour741", FALSE_STYLES, FALSE_COLORSCALERANGE,
+                OFFSET_BBOX, "FalseColour741OffsetBbox.png");
     }
 
 }
