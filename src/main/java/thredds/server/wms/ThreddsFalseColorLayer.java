@@ -47,6 +47,8 @@ public class ThreddsFalseColorLayer extends ThreddsScalarLayer implements
         setTitle(String.format("False Colour (Red=%s, Green=%s, Blue=%s)",
                 redComponent.getId(), greenComponent.getId(),
                 blueComponent.getId()));
+        setLayerAbstract(getTitle());
+        setGeographicBoundingBox(redComponent.getGeographicBoundingBox());
         setTimeValues(redComponent.getTimeValues());
     }
 

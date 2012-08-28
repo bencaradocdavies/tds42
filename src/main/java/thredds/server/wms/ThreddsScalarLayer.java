@@ -59,7 +59,7 @@ import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
  * @todo Implement more efficient getTimeseries()
  * @author Jon
  */
-class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
+public class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
 {
     private GridDatatype grid;
     private ThreddsDataset dataset;

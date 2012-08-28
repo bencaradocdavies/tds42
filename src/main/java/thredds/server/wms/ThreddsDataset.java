@@ -143,6 +143,14 @@ public class ThreddsDataset implements Dataset
     }
   }
 
+    /**
+     * Examine the WMS config for variable settings that define false colour
+     * layers and create them.
+     * 
+     * @param wmsConfig
+     *            the WMS settings to be examined
+     * @return list of false colour layers
+     */
     private List<ThreddsFalseColorLayer> findFalseColorLayers(
             WmsDetailedConfig wmsConfig) {
         List<ThreddsFalseColorLayer> falseColorLayers = new ArrayList<ThreddsFalseColorLayer>();
