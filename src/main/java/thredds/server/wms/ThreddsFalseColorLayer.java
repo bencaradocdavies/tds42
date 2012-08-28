@@ -11,12 +11,33 @@ import uk.ac.rdg.resc.ncwms.wms.FalseColorLayer;
 public class ThreddsFalseColorLayer extends ThreddsScalarLayer implements
         FalseColorLayer {
 
+    /**
+     * The red component of the false colour layer.
+     */
     private final ThreddsScalarLayer redComponent;
 
+    /**
+     * The green component of the false colour layer.
+     */
     private final ThreddsScalarLayer greenComponent;
 
+    /**
+     * The blue component of the false colour layer.
+     */
     private final ThreddsScalarLayer blueComponent;
 
+    /**
+     * Constructor.
+     * 
+     * @param id
+     *            the name of the false colour layer
+     * @param redComponent
+     *            the red component of the false colour layer
+     * @param greenComponent
+     *            the green component of the false colour layer
+     * @param blueComponent
+     *            the blue component of the false colour layer
+     */
     public ThreddsFalseColorLayer(String id, ThreddsScalarLayer redComponent,
             ThreddsScalarLayer greenComponent, ThreddsScalarLayer blueComponent) {
         super(id);
