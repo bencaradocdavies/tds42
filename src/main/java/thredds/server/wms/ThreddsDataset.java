@@ -155,32 +155,32 @@ public class ThreddsDataset implements Dataset
                 LayerSettings layerSettings = settingsPerVariable.get(layer);
                 if (layerSettings.isFalseColor()) {
                     ThreddsScalarLayer redLayer = scalarLayers
-                            .get(layerSettings.getRedLayer());
+                            .get(layerSettings.getRedComponent());
                     ThreddsScalarLayer greenLayer = scalarLayers
-                            .get(layerSettings.getGreenLayer());
+                            .get(layerSettings.getGreenComponent());
                     ThreddsScalarLayer blueLayer = scalarLayers
-                            .get(layerSettings.getBlueLayer());
+                            .get(layerSettings.getBlueComponent());
                     if (redLayer == null || greenLayer == null
                             || blueLayer == null) {
                         StringBuilder missingLayers = new StringBuilder();
                         if (redLayer == null) {
                             missingLayers.append(" ");
-                            missingLayers.append(layerSettings.getRedLayer());
+                            missingLayers.append(layerSettings.getRedComponent());
                         }
                         if (greenLayer == null) {
                             missingLayers.append(" ");
-                            missingLayers.append(layerSettings.getGreenLayer());
+                            missingLayers.append(layerSettings.getGreenComponent());
                         }
                         if (blueLayer == null) {
                             missingLayers.append(" ");
-                            missingLayers.append(layerSettings.getBlueLayer());
+                            missingLayers.append(layerSettings.getBlueComponent());
                         }
                         LOGGER.warn(String.format("Skipped false colour layer"
                                 + " %s (Red=%s, Green=%s, Blue=%s)"
                                 + " with missing component:%s", layer,
-                                layerSettings.getRedLayer(),
-                                layerSettings.getGreenLayer(),
-                                layerSettings.getBlueLayer(),
+                                layerSettings.getRedComponent(),
+                                layerSettings.getGreenComponent(),
+                                layerSettings.getBlueComponent(),
                                 missingLayers.toString()));
                     } else {
                         falseColorLayers.add(new ThreddsFalseColorLayer(layer,

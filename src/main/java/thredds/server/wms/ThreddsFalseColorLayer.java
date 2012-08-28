@@ -2,35 +2,52 @@ package thredds.server.wms;
 
 import uk.ac.rdg.resc.ncwms.wms.FalseColorLayer;
 
-public class ThreddsFalseColorLayer extends ThreddsScalarLayer implements FalseColorLayer {
+/**
+ * A scalar layer that consists of three colour components that can be combined
+ * to form a false colour layer.
+ * 
+ * @author Ben Caradoc-Davies, CSIRO Earth Science and Resource Engineering
+ */
+public class ThreddsFalseColorLayer extends ThreddsScalarLayer implements
+        FalseColorLayer {
 
-    private final ThreddsScalarLayer redLayer;
+    private final ThreddsScalarLayer redComponent;
 
-    private final ThreddsScalarLayer greenLayer;
+    private final ThreddsScalarLayer greenComponent;
 
-    private final ThreddsScalarLayer blueLayer;
+    private final ThreddsScalarLayer blueComponent;
 
-    public ThreddsFalseColorLayer(String id, ThreddsScalarLayer redLayer,
-            ThreddsScalarLayer greenLayer, ThreddsScalarLayer blueLayer) {
+    public ThreddsFalseColorLayer(String id, ThreddsScalarLayer redComponent,
+            ThreddsScalarLayer greenComponent, ThreddsScalarLayer blueComponent) {
         super(id);
-        this.redLayer = redLayer;
-        this.greenLayer = greenLayer;
-        this.blueLayer = blueLayer;
+        this.redComponent = redComponent;
+        this.greenComponent = greenComponent;
+        this.blueComponent = blueComponent;
         setTitle(String.format("False Colour (Red=%s, Green=%s, Blue=%s)",
-                redLayer.getId(), greenLayer.getId(), blueLayer.getId()));
-        setTimeValues(redLayer.getTimeValues());
+                redComponent.getId(), greenComponent.getId(),
+                blueComponent.getId()));
+        setTimeValues(redComponent.getTimeValues());
     }
 
-    public ThreddsScalarLayer getRedLayer() {
-        return redLayer;
+    /**
+     * @see uk.ac.rdg.resc.ncwms.wms.FalseColorLayer#getRedComponent()
+     */
+    public ThreddsScalarLayer getRedComponent() {
+        return redComponent;
     }
 
-    public ThreddsScalarLayer getGreenLayer() {
-        return greenLayer;
+    /**
+     * @see uk.ac.rdg.resc.ncwms.wms.FalseColorLayer#getGreenComponent()
+     */
+    public ThreddsScalarLayer getGreenComponent() {
+        return greenComponent;
     }
 
-    public ThreddsScalarLayer getBlueLayer() {
-        return blueLayer;
+    /**
+     * @see uk.ac.rdg.resc.ncwms.wms.FalseColorLayer#getBlueComponent()
+     */
+    public ThreddsScalarLayer getBlueComponent() {
+        return blueComponent;
     }
 
 }

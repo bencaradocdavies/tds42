@@ -47,9 +47,9 @@ public class LayerSettings
     private String defaultPaletteName =  null;
     private Boolean logScaling = null;
     private Integer defaultNumColorBands = null;
-    private String redLayer = null;
-    private String greenLayer = null;
-    private String blueLayer = null;
+    private String redComponent = null;
+    private String greenComponent = null;
+    private String blueComponent = null;
 
     LayerSettings(Element parentElement) throws WmsConfigException
     {
@@ -66,9 +66,9 @@ public class LayerSettings
         this.defaultNumColorBands = getInteger(parentElement, "defaultNumColorBands",
                 Ranges.newRange(5, ColorPalette.MAX_NUM_COLOURS));
         this.logScaling = getBoolean(parentElement, "logScaling");
-        this.redLayer = parentElement.getChildTextTrim("redLayer");
-        this.greenLayer = parentElement.getChildTextTrim("greenLayer");
-        this.blueLayer = parentElement.getChildTextTrim("blueLayer");
+        this.redComponent = parentElement.getChildTextTrim("redComponent");
+        this.greenComponent = parentElement.getChildTextTrim("greenComponent");
+        this.blueComponent = parentElement.getChildTextTrim("blueComponent");
     }
 
     /** Package-private constructor, sets all fields to null */
@@ -145,20 +145,20 @@ public class LayerSettings
         return defaultNumColorBands;
     }
 
-    public String getRedLayer() {
-        return redLayer;
+    public String getRedComponent() {
+        return redComponent;
     }
 
-    public String getGreenLayer() {
-        return greenLayer;
+    public String getGreenComponent() {
+        return greenComponent;
     }
 
-    public String getBlueLayer() {
-        return blueLayer;
+    public String getBlueComponent() {
+        return blueComponent;
     }
 
     public boolean isFalseColor() {
-        return redLayer != null && greenLayer != null && blueLayer != null;
+        return redComponent != null && greenComponent != null && blueComponent != null;
     }
 
     /**
@@ -172,9 +172,9 @@ public class LayerSettings
         if (this.defaultPaletteName == null) this.defaultPaletteName = newSettings.defaultPaletteName;
         if (this.logScaling == null) this.logScaling = newSettings.logScaling;
         if (this.defaultNumColorBands == null) this.defaultNumColorBands = newSettings.defaultNumColorBands;
-        if (this.redLayer == null) this.redLayer = newSettings.redLayer;
-        if (this.greenLayer == null) this.greenLayer = newSettings.greenLayer;
-        if (this.blueLayer == null) this.blueLayer = newSettings.blueLayer;
+        if (this.redComponent == null) this.redComponent = newSettings.redComponent;
+        if (this.greenComponent == null) this.greenComponent = newSettings.greenComponent;
+        if (this.blueComponent == null) this.blueComponent = newSettings.blueComponent;
     }
 
     void setDefaultColorScaleRange(Range<Float> defaultColorScaleRange)
@@ -191,8 +191,8 @@ public class LayerSettings
                         + "redLayer = %s, greenLayer = %s, blueLayer = %s",
                         this.allowFeatureInfo, this.defaultColorScaleRange,
                         this.defaultPaletteName, this.defaultNumColorBands,
-                        this.logScaling, this.redLayer, this.greenLayer,
-                        this.blueLayer);
+                        this.logScaling, this.redComponent, this.greenComponent,
+                        this.blueComponent);
     }
 
 }
