@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="tds" default="makeWar" basedir=".">
+<project name="tds" default="cleanMakeWar" basedir=".">
   
   <tstamp>
     <format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
@@ -357,7 +357,7 @@
   <target  name="cleanMakeSrcAndWar" depends="clean, makeSrcAndWar"/>
   <target  name="makeSrcAndWar" depends="makeSrc-TDS, makeWar, makeChecksums"/>
 
-  <target name="cleanMakeWar" depends="clean, makeWar" />
+  <target name="cleanMakeWar" depends="clean, wms-test, makeWar" />
 
   <target name="makeWar" depends="war-setup" description="create a war file from the distribution directory">
     <jar destfile="${build.dir}/${warfile}">
@@ -1143,5 +1143,49 @@
 	  <ant dir="." target="cleanMakeWar" inheritAll="false"/>
   </target>
 
+  <target name="wms-test" depends="compile">
+    <property name="wms-test.sources.dir" value="${basedir}/src/test/java" />
+    <property name="wms-test.resources.dir" value="${basedir}/src/test/resources" />
+    <property name="wms-test.classes.dir" value="${build.dir}/test-classes" />
+    <mkdir dir="${wms-test.classes.dir}" />
+    <!-- compile tests -->
+    <javac destdir="${wms-test.classes.dir}" source="1.6" target="1.6" debug="${build.debug}"
+           debuglevel="${build.debuglevel}" includeAntRuntime="false">
+      <src path="${wms-test.sources.dir}" />
+      <include name="thredds/server/wms/**" />
+      <classpath>
+        <pathelement path="${build.classes.dir}"/>
+        <fileset refid="compile.libraries" />
+        <fileset refid="servlet.compile.libraries" />
+        <fileset dir="${lib.dir}">
+           <include name="${spring-test.jar}" />
+           <include name="${junit.jar}" />
+         </fileset>
+      </classpath>
+    </javac>
+    <!-- copy test resources -->
+    <copy todir="${wms-test.classes.dir}">
+      <fileset dir="${wms-test.resources.dir}"/>
+    </copy>
+    <!-- run wms tests -->
+    <junit haltonfailure="yes" showoutput="yes" printsummary="yes">
+      <classpath>
+        <pathelement path="${wms-test.classes.dir}"/>
+        <pathelement path="${build.classes.dir}"/>
+        <fileset refid="compile.libraries" />
+        <fileset refid="servlet.compile.libraries" />
+        <fileset refid="runtime.libraries" />
+        <fileset dir="${lib.dir}">
+           <include name="${spring-test.jar}" />
+           <include name="${junit.jar}" />
+           <include name="${httpunit.jar}" />
+         </fileset>
+      </classpath>
+      <batchtest>
+        <fileset dir="${wms-test.classes.dir}" includes="**/*Test.class" />
+        <formatter type="plain" usefile="false" />
+      </batchtest>
+    </junit>
+  </target>
 
 </project>
