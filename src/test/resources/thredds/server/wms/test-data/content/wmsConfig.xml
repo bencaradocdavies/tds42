@@ -30,8 +30,7 @@ for more information.
 
 <!ELEMENT variables (variable*)>
 
-<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?,
-                    redComponent?, greenComponent?, blueComponent?)>
+<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?, redComponent?, greenComponent?, blueComponent?)>
 <!ATTLIST variable id CDATA #REQUIRED>
 
 <!ELEMENT allowFeatureInfo (#PCDATA)>
