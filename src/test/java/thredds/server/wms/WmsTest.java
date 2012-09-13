@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -352,6 +353,9 @@ public class WmsTest {
         Assert.assertTrue(namedLayers.containsKey("Band7"));
         Assert.assertTrue(namedLayers.containsKey("False741"));
         Assert.assertTrue(namedLayers.containsKey("FalseColour741"));
+        Assert.assertTrue(Arrays.asList(
+                (String[]) models.get("supportedCrsCodes")).contains(
+                "EPSG:4283"));
     }
 
     /**
