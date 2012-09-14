@@ -59,7 +59,7 @@ for more information.
     </global>
 
     <overrides>
-        
+
         <datasetPath pathSpec="laamu/*.nc">
             <pathDefaults>
                 <defaultColorScaleRange>0.5 255.5</defaultColorScaleRange>
@@ -79,7 +79,23 @@ for more information.
                 </variable>
             </variables>
         </datasetPath>
-        
+
+        <datasetPath pathSpec="adelaide/*.nc">
+            <pathDefaults>
+                <defaultColorScaleRange>1 65535</defaultColorScaleRange>
+                <defaultPaletteName>greyscale</defaultPaletteName>
+                <defaultNumColorBands>252</defaultNumColorBands>
+                <logScaling>false</logScaling>
+            </pathDefaults>
+            <variables>
+                <variable id="FalseColour741">
+                    <redComponent>Band7</redComponent>
+                    <greenComponent>Band4</greenComponent>
+                    <blueComponent>Band1</blueComponent>
+                </variable>
+            </variables>
+        </datasetPath>
+
     </overrides>
 
 </wmsConfig>

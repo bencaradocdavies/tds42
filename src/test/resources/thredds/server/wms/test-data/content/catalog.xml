@@ -19,4 +19,15 @@
         </filter>
     </datasetScan>
 
+    <datasetScan name="Adelaide River Mouth" ID="adelaide" path="adelaide"
+        location="content/data/adelaide">
+        <metadata inherited="true">
+            <serviceName>wms</serviceName>
+            <dataType>Grid</dataType>
+        </metadata>
+        <filter>
+            <include wildcard="*.nc" />
+        </filter>
+    </datasetScan>
+
 </catalog>

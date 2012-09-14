@@ -46,7 +46,7 @@ public abstract class WmsTestSupport {
         if (wmsController == null) {
             ConfigurableWebApplicationContext context = new XmlWebApplicationContext();
             ServletContext servletContext = new MockServletContext(
-                    LaamuWmsTest.class.getResource("test-data/webapp")
+                    WmsTestSupport.class.getResource("test-data/webapp")
                             .toString(), new FileSystemResourceLoader());
             // Required because Thredds implementation examines its own context.
             servletContext
@@ -138,24 +138,24 @@ public abstract class WmsTestSupport {
     /**
      * servlet request URI path component.
      */
-    private String servletRequestUri;
+    private final String servletRequestUri;
 
     /**
      * Servlet request URI path component with the servlet context removed.
      */
-    private String servletRequestPathInfo;
+    private final String servletRequestPathInfo;
 
     /**
      * Relative path to the classpath directory containing expected response
      * images.
      */
-    private String testDataExpectedDirectory;
+    private final String testDataExpectedDirectory;
 
     /**
      * Filesystem path to the location where response images should be saved, or
      * null if none. Usefule for bootstrapping or debugging
      */
-    private String responseSaveDirectory;
+    private final String responseSaveDirectory;
 
     /**
      * Constructor.
