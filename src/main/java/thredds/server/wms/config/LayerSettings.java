@@ -178,8 +178,8 @@ public class LayerSettings
         }
         String source = element.getChildTextTrim("source");
         if (source == null) {
-            throw new WmsConfigException("False colour component "
-                    + "missing mandatory <source> element");
+            throw new WmsConfigException(
+                    "Missing source for false colour component");
         }
         Range<Float> range = getRange(element, "range");
         if (range == null) {
@@ -193,7 +193,7 @@ public class LayerSettings
         if (gamma == null) {
             gamma = defaultGamma;
         }
-        if (gamma.compareTo(0.0f) <= 0) {
+        if (gamma <= 0.0f) {
             throw new WmsConfigException("False colour gamma must be positive");
         }
         return new FalseColorComponentSettings(source, range, gamma);
@@ -327,6 +327,12 @@ public class LayerSettings
          */
         public Float getGamma() {
             return gamma;
+        }
+
+        @Override
+        public String toString() {
+            return "FalseColorComponentSettings [source=" + source + ", range="
+                    + range + ", gamma=" + gamma + "]";
         }
 
     }

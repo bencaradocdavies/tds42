@@ -29,38 +29,55 @@ import uk.ac.rdg.resc.ncwms.wms.ScalarLayer;
 public class ThreddsFalseColorLayer extends ThreddsScalarLayer implements
         FalseColorLayer {
 
+    /**
+     * Minimum value of a colour channel.
+     */
     private static final int COLOR_CHANNEL_MINIMUM = 0;
 
+    /**
+     * Maximum value of a colour channel.
+     */
     private static final int COLOR_CHANNEL_MAXIMUM = 255;
 
     /**
      * Scale raw data in place, replacing source values with colour channel
-     * values. Source data outside the range is replaced with null. Gamma
-     * correction is applied to the range-fraction.
+     * values. Source data outside the specified range is replaced with null.
+     * Gamma correction is applied to the range fraction.
+     * 
+     * <p>
+     * 
+     * This method is static for easier testability.
      * 
      * @param data
-     *            raw variable data to be converted to colour channel values.
+     *            raw variable data to be converted to colour channel values
      * @param range
      *            range of valid raw data
      * @param gamma
      *            gamma to be applied to range-fraction
      */
     public static void scale(List<Float> data, Range<Float> range, Float gamma) {
-        double min = range.getMinimum();
-        double max = range.getMaximum();
-        double g = gamma;
+        double dataMinimum = range.getMinimum();
+        double dataMaximum = range.getMaximum();
+        double colorGamma = gamma;
+        double dataRangeLength = dataMaximum - dataMinimum;
+        int colorRangeLength = COLOR_CHANNEL_MAXIMUM - COLOR_CHANNEL_MINIMUM;
+        int colorMinimum = COLOR_CHANNEL_MINIMUM;
         int n = data.size();
         for (int i = 0; i < n; i++) {
             if (data.get(i) != null) {
                 double d = data.get(i);
-                if (d < min || d > max) {
+                if (d < dataMinimum || d > dataMaximum) {
+                    // out of data range; treat as missing
                     data.set(i, null);
                 } else {
-                    double c = Math
-                            .floor((COLOR_CHANNEL_MAXIMUM - COLOR_CHANNEL_MINIMUM)
-                                    * Math.pow((d - min) / (max - min), g)
-                                    + COLOR_CHANNEL_MINIMUM + 0.5);
+                    // scale the data range onto the colour range
+                    // gamma is applied to the range fraction [0,1]
+                    // floor(x + 0.5) means round to nearest
+                    double c = Math.floor(Math.pow((d - dataMinimum)
+                            / dataRangeLength, colorGamma)
+                            * colorRangeLength + colorMinimum + 0.5);
                     if (c < COLOR_CHANNEL_MINIMUM || c > COLOR_CHANNEL_MAXIMUM) {
+                        // out of colour range; treat as missing
                         data.set(i, null);
                     } else {
                         data.set(i, (float) c);
@@ -113,10 +130,12 @@ public class ThreddsFalseColorLayer extends ThreddsScalarLayer implements
             setTitle(layerSettings.getTitle());
         }
         if (layerSettings.getAbstract() == null) {
+            // if no abstract set it to title (not an error!)
             setLayerAbstract(getTitle());
         } else {
             setLayerAbstract(layerSettings.getAbstract());
         }
+        // take all the rest from the red source layer
         setHorizontalCoordSys(redSourceLayer.getHorizontalCoordSys());
         setGeographicBoundingBox(redSourceLayer.getGeographicBoundingBox());
         setGridDatatype(redSourceLayer.getGridDatatype());
@@ -183,11 +202,19 @@ public class ThreddsFalseColorLayer extends ThreddsScalarLayer implements
      */
     public class ComponentLayer implements ScalarLayer {
 
+        /**
+         * Layer that is the source for this colour component.
+         */
         private final ScalarLayer sourceLayer;
 
+        /**
+         * Settings used to transform this data into a colour channel.
+         */
         private final FalseColorComponentSettings componentSettings;
 
         /**
+         * Constructor.
+         * 
          * @param sourceLayer
          *            layer that is the source for this colour component
          * @param componentSettings
