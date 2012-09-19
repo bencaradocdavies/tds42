@@ -42,14 +42,27 @@ import uk.ac.rdg.resc.ncwms.util.Ranges;
  */
 public class LayerSettings
 {
+
+    /**
+     * Default source variable range for false colour layers.
+     */
+    private static final Range<Float> DEFAULT_RANGE = Ranges.newRange(0.0f, 255.0f);
+
+    /**
+     * Default gamma for false colour layers.
+     */
+    private static final Float DEFAULT_GAMMA = 1.0f;
+
     private Boolean allowFeatureInfo = null;
     private Range<Float> defaultColorScaleRange = null;
     private String defaultPaletteName =  null;
     private Boolean logScaling = null;
     private Integer defaultNumColorBands = null;
-    private String redComponent = null;
-    private String greenComponent = null;
-    private String blueComponent = null;
+    private String title = null;
+    private String abstract_ = null;    
+    private FalseColorComponentSettings red = null;
+    private FalseColorComponentSettings green = null;
+    private FalseColorComponentSettings blue = null;
 
     LayerSettings(Element parentElement) throws WmsConfigException
     {
@@ -66,12 +79,27 @@ public class LayerSettings
         this.defaultNumColorBands = getInteger(parentElement, "defaultNumColorBands",
                 Ranges.newRange(5, ColorPalette.MAX_NUM_COLOURS));
         this.logScaling = getBoolean(parentElement, "logScaling");
-        this.redComponent = parentElement.getChildTextTrim("redComponent");
-        this.greenComponent = parentElement.getChildTextTrim("greenComponent");
-        this.blueComponent = parentElement.getChildTextTrim("blueComponent");
+        // false colour layers
+        this.title = parentElement.getChildTextTrim("title");
+        this.abstract_ = parentElement.getChildTextTrim("abstract");
+        Range<Float> defaultRange = getRange(parentElement, "range");
+        if (defaultRange == null) {
+            defaultRange = DEFAULT_RANGE;
+        }
+        Float defaultGamma = getFloat(parentElement, "gamma");
+        if (defaultGamma == null) {
+            defaultGamma = DEFAULT_GAMMA;
+        }
+        this.red = getFalseColorComponentSettings(
+                parentElement.getChild("red"), defaultRange, defaultGamma);
+        this.green = getFalseColorComponentSettings(
+                parentElement.getChild("green"), defaultRange, defaultGamma);
+        this.blue = getFalseColorComponentSettings(
+                parentElement.getChild("blue"), defaultRange, defaultGamma);
         if (!isFalseColor()
-                && (this.redComponent != null || this.greenComponent != null || this.blueComponent != null)) {
-            throw new WmsConfigException("Either all or none of redComponent, greenComponent, and blueComponent must be given");
+                && (this.red != null || this.green != null || this.blue != null)) {
+            throw new WmsConfigException(
+                    "Either all or none of red, green, and blue must be given");
         }
     }
 
@@ -107,6 +135,19 @@ public class LayerSettings
         else return val;
     }
 
+    private static Float getFloat(Element parentElement, String childName)
+            throws WmsConfigException {
+        String s = parentElement.getChildTextTrim(childName);
+        if (s == null) {
+            return null;
+        }
+        try {
+            return Float.parseFloat(s);
+        } catch (NumberFormatException e) {
+            throw new WmsConfigException(e);
+        }
+    }
+
     private static Range<Float> getRange(Element parentElement, String childName)
             throws WmsConfigException
     {
@@ -129,6 +170,35 @@ public class LayerSettings
         }
     }
 
+    private static FalseColorComponentSettings getFalseColorComponentSettings(
+            Element element, Range<Float> defaultRange, Float defaultGamma)
+            throws WmsConfigException {
+        if (element == null) {
+            return null;
+        }
+        String source = element.getChildTextTrim("source");
+        if (source == null) {
+            throw new WmsConfigException("False colour component "
+                    + "missing mandatory <source> element");
+        }
+        Range<Float> range = getRange(element, "range");
+        if (range == null) {
+            range = defaultRange;
+        }
+        if (range.getMinimum().equals(range.getMaximum())) {
+            throw new WmsConfigException("False colour range must have "
+                    + "different minimum and maximum");
+        }
+        Float gamma = getFloat(element, "gamma");
+        if (gamma == null) {
+            gamma = defaultGamma;
+        }
+        if (gamma.compareTo(0.0f) <= 0) {
+            throw new WmsConfigException("False colour gamma must be positive");
+        }
+        return new FalseColorComponentSettings(source, range, gamma);
+    }
+
     public Boolean isAllowFeatureInfo() {
         return allowFeatureInfo;
     }
@@ -149,20 +219,28 @@ public class LayerSettings
         return defaultNumColorBands;
     }
 
-    public String getRedComponent() {
-        return redComponent;
+    public String getTitle() {
+        return title;
     }
 
-    public String getGreenComponent() {
-        return greenComponent;
+    public String getAbstract() {
+        return abstract_;
     }
 
-    public String getBlueComponent() {
-        return blueComponent;
+    public FalseColorComponentSettings getRed() {
+        return red;
+    }
+
+    public FalseColorComponentSettings getGreen() {
+        return green;
+    }
+
+    public FalseColorComponentSettings getBlue() {
+        return blue;
     }
 
     public boolean isFalseColor() {
-        return redComponent != null && greenComponent != null && blueComponent != null;
+        return red != null && green != null && blue != null;
     }
 
     /**
@@ -176,9 +254,11 @@ public class LayerSettings
         if (this.defaultPaletteName == null) this.defaultPaletteName = newSettings.defaultPaletteName;
         if (this.logScaling == null) this.logScaling = newSettings.logScaling;
         if (this.defaultNumColorBands == null) this.defaultNumColorBands = newSettings.defaultNumColorBands;
-        if (this.redComponent == null) this.redComponent = newSettings.redComponent;
-        if (this.greenComponent == null) this.greenComponent = newSettings.greenComponent;
-        if (this.blueComponent == null) this.blueComponent = newSettings.blueComponent;
+        if (this.title == null) this.title = newSettings.title;
+        if (this.abstract_ == null) this.abstract_ = newSettings.abstract_;
+        if (this.red == null) this.red = newSettings.red;
+        if (this.green == null) this.green = newSettings.green;
+        if (this.blue == null) this.blue = newSettings.blue;
     }
 
     void setDefaultColorScaleRange(Range<Float> defaultColorScaleRange)
@@ -192,11 +272,63 @@ public class LayerSettings
                 .format("allowFeatureInfo = %s, defaultColorScaleRange = %s, "
                         + "defaultPaletteName = %s, defaultNumColorBands = %s, "
                         + "logScaling = %s, "
-                        + "redLayer = %s, greenLayer = %s, blueLayer = %s",
+                        + "title = \"%s\", abstract = \"%s\", "
+                        + "red = %s, green = %s, blue = %s",
                         this.allowFeatureInfo, this.defaultColorScaleRange,
                         this.defaultPaletteName, this.defaultNumColorBands,
-                        this.logScaling, this.redComponent, this.greenComponent,
-                        this.blueComponent);
+                        this.logScaling, this.title, this.abstract_, this.red,
+                        this.green, this.blue);
+    }
+
+    /**
+     * Setting for a colour component of a false colour layer.
+     */
+    public static class FalseColorComponentSettings {
+
+        private final String source;
+
+        private final Range<Float> range;
+
+        private final Float gamma;
+
+        /**
+         * @param source
+         *            name of the source variable for a false colour component
+         * @param range
+         *            range of values in the source variable that are mapped to
+         *            a colour channel
+         * @param gamma
+         *            gamma applied to normalised colour value [0,1]
+         */
+        public FalseColorComponentSettings(String source, Range<Float> range,
+                Float gamma) {
+            this.source = source;
+            this.range = range;
+            this.gamma = gamma;
+        }
+
+        /**
+         * Return name of the source variable for a false colour component.
+         */
+        public String getSource() {
+            return source;
+        }
+
+        /**
+         * Return range of values in the source variable that are mapped to a
+         * colour channel.
+         */
+        public Range<Float> getRange() {
+            return range;
+        }
+
+        /**
+         * Return the gamma applied to normalised colour value [0,1].
+         */
+        public Float getGamma() {
+            return gamma;
+        }
+
     }
 
 }

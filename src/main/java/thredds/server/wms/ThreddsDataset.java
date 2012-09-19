@@ -162,40 +162,36 @@ public class ThreddsDataset implements Dataset
             for (String layer : settingsPerVariable.keySet()) {
                 LayerSettings layerSettings = settingsPerVariable.get(layer);
                 if (layerSettings.isFalseColor()) {
-                    ThreddsScalarLayer redComponent = scalarLayers
-                            .get(layerSettings.getRedComponent());
-                    ThreddsScalarLayer greenComponent = scalarLayers
-                            .get(layerSettings.getGreenComponent());
-                    ThreddsScalarLayer blueComponent = scalarLayers
-                            .get(layerSettings.getBlueComponent());
-                    if (redComponent == null || greenComponent == null
-                            || blueComponent == null) {
+                    ThreddsScalarLayer red = scalarLayers.get(layerSettings
+                            .getRed().getSource());
+                    ThreddsScalarLayer green = scalarLayers.get(layerSettings
+                            .getGreen().getSource());
+                    ThreddsScalarLayer blue = scalarLayers.get(layerSettings
+                            .getBlue().getSource());
+                    if (red == null || green == null || blue == null) {
                         StringBuilder missingComponents = new StringBuilder();
-                        if (redComponent == null) {
+                        if (red == null) {
                             missingComponents.append(" ");
-                            missingComponents.append(layerSettings
-                                    .getRedComponent());
+                            missingComponents.append(layerSettings.getRed());
                         }
-                        if (greenComponent == null) {
+                        if (green == null) {
                             missingComponents.append(" ");
-                            missingComponents.append(layerSettings
-                                    .getGreenComponent());
+                            missingComponents.append(layerSettings.getGreen());
                         }
-                        if (blueComponent == null) {
+                        if (blue == null) {
                             missingComponents.append(" ");
-                            missingComponents.append(layerSettings
-                                    .getBlueComponent());
+                            missingComponents.append(layerSettings.getBlue());
                         }
                         LOGGER.warn(String.format("Skipped false colour layer"
                                 + " %s (Red=%s, Green=%s, Blue=%s)"
                                 + " with missing component:%s", layer,
-                                layerSettings.getRedComponent(),
-                                layerSettings.getGreenComponent(),
-                                layerSettings.getBlueComponent(),
+                                layerSettings.getRed(),
+                                layerSettings.getGreen(),
+                                layerSettings.getBlue(),
                                 missingComponents.toString()));
                     } else {
                         falseColorLayers.add(new ThreddsFalseColorLayer(layer,
-                                redComponent, greenComponent, blueComponent));
+                                layerSettings, red, green, blue));
                     }
                 }
             }

@@ -1,6 +1,13 @@
 package thredds.server.wms;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Assert;
 import org.junit.Test;
+
+import uk.ac.rdg.resc.ncwms.util.Range;
+import uk.ac.rdg.resc.ncwms.util.Ranges;
 
 /**
  * Test Thredds / ncWMS against Adelaide River Mouth subset netCDF data with
@@ -50,6 +57,45 @@ public class AdelaideWmsTest extends WmsTestSupport {
     public AdelaideWmsTest() {
         super(SERVLET_REQUEST_URI, SERVLET_REQUEST_PATH_INFO,
                 TEST_DATA_EXPECTED_DIRECTORY, RESPONSE_SAVE_DIRECTORY);
+    }
+
+    /**
+     * Test that scaling of individual band data with
+     * {@link ThreddsFalseColorLayer#scale(List, Range, Float)} has the expected
+     * output.
+     */
+    @Test
+    public void scale() {
+        @SuppressWarnings("serial")
+        List<Float> data = new ArrayList<Float>() {
+            {
+                add(-1.0f);
+                add(0.0f);
+                add(1.0f);
+                add(1000.0f);
+                add(4000.0f);
+                add(5000.0f);
+                add(6000.0f);
+                add(9000.0f);
+                add(9999.0f);
+                add(10000.0f);
+                add(10001.0f);
+            }
+        };
+        Range<Float> range = Ranges.newRange(0.0f, 10000.0f);
+        Float gamma = 0.5f;
+        ThreddsFalseColorLayer.scale(data, range, gamma);
+        Assert.assertEquals((Float) null, data.get(0));
+        Assert.assertEquals((Float) 0.0f, data.get(1));
+        Assert.assertEquals((Float) 3.0f, data.get(2));
+        Assert.assertEquals((Float) 81.0f, data.get(3));
+        Assert.assertEquals((Float) 161.0f, data.get(4));
+        Assert.assertEquals((Float) 180.0f, data.get(5));
+        Assert.assertEquals((Float) 198.0f, data.get(6));
+        Assert.assertEquals((Float) 242.0f, data.get(7));
+        Assert.assertEquals((Float) 255.0f, data.get(8));
+        Assert.assertEquals((Float) 255.0f, data.get(9));
+        Assert.assertEquals((Float) null, data.get(10));
     }
 
     /**
