@@ -8,20 +8,38 @@ This is a branch of Thredds Data Server 4.2 with enhancements to support Earth O
 * ncWMS scanline support for NetCDF4 / HDF5, necessary for large data files.
 * ncWMS support for large source grids (with more than 2**31-1 points).
     * For example, WMS for a 647 GB NetCDF 4 file with a single `ubyte` variable on a 461276x1505407 grid.
-* Support for false colour WMS layers created from NetCDF 4 `ubyte` variables.
+* Support for false colour WMS layers created from NetCDF variables.
 
 
 ## False colour WMS
 
-To enable a false colour layer, edit your `wmsConfig.xml` to specify a new layer name and the three NetCDF 4 `ubyte` variables that form its components by inserting a `variable` element in `wmsConfig/overrides/datasetPath/variables`. For example:
+To enable a false colour layer, edit your `wmsConfig.xml` to specify a new layer name (`id`) and the three NetCDF source variables that form its components by inserting a `variable` element in `wmsConfig/overrides/datasetPath/variables`. This example creates a new false colour layer `FalseColour741` with red, green, and blue components from variables `Band7`, `Band4`, and `Band1` respectively:
 
     <variable id="FalseColour741">
-        <redComponent>Band7</redComponent>
-        <greenComponent>Band4</greenComponent>
-        <blueComponent>Band1</blueComponent>
+        <title>False Colour</title>
+        <abstract>False Colour from bands 7, 4, and 1</abstract>
+        <range>1 10000</range>
+        <gamma>0.5</gamma>
+        <red>
+            <source>Band7</source>
+            <range>10 7500</range>
+            <gamma>0.7</gamma>
+        </red>
+        <green>
+            <source>Band4</source>
+        </green>
+        <blue>
+            <source>Band1</source>
+        </blue>
     </variable>
 
-Note that if you are updating the `wmsConfig.xml` of a upstream (Unidata-built) Thredds Data Server 4.2 deployment, the `DOCTYPE` of `wmsConfig.xml` has changed and must be updated from a new one.
+* `title` and `abstract` are optional; if omitted, defaults will be created.
+* `range` and `gamma` can be given either in the  `variable` element or inside the element for a colour component, with the latter taking precedence.
+* `source` (required) is the name of the NetCDF variable from which data is taken to determine the value of a particular colour channel.
+* `range` (optional) is the range of valid data values in the source variable; values outside this range are treated as missing. If omitted, `range` defaults to `0 255`.
+* `gamma` (optional) is the exponent applied to the fraction of the range before conversion to a colour: `((x - xmin) / (xmax - xmin)) ** gamma`. If omitted, `gamma` defaults to `1.0`.
+
+Note that, if you are updating the `wmsConfig.xml` of an upstream (Unidata-built) Thredds Data Server 4.2 deployment, the `DOCTYPE` of `wmsConfig.xml` has changed; if you want to use false colour layers, the `DOCTYPE` of `wmsConfig.xml` must be updated from this branch. The format of `wmsConfig.xml` is backwards-compatible.
 
 
 ## Build
