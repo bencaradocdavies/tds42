@@ -30,7 +30,7 @@ for more information.
 
 <!ELEMENT variables (variable*)>
 
-<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?, redComponent?, greenComponent?, blueComponent?)>
+<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?, title?, abstract?, range?, gamma?, red?, green?, blue?)>
 <!ATTLIST variable id CDATA #REQUIRED>
 
 <!ELEMENT allowFeatureInfo (#PCDATA)>
@@ -38,9 +38,16 @@ for more information.
 <!ELEMENT defaultPaletteName (#PCDATA)>
 <!ELEMENT defaultNumColorBands (#PCDATA)>
 <!ELEMENT logScaling (#PCDATA)>
-<!ELEMENT redComponent (#PCDATA)>
-<!ELEMENT greenComponent (#PCDATA)>
-<!ELEMENT blueComponent (#PCDATA)>
+
+<!-- false colour -->
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT abstract (#PCDATA)>
+<!ELEMENT range (#PCDATA)>
+<!ELEMENT gamma (#PCDATA)>
+<!ELEMENT red (source, range?, gamma?)>
+<!ELEMENT green (source, range?, gamma?)>
+<!ELEMENT blue (source, range?, gamma?)>
+<!ELEMENT source (#PCDATA)>
 ]>
 <wmsConfig>
 
