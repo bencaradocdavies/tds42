@@ -33,7 +33,7 @@ To enable a false colour layer, edit your `wmsConfig.xml` to specify a new layer
         </blue>
     </variable>
 
-* `title` and `abstract` are optional; if omitted, defaults will be created.
+* `title` and `abstract` are optional. If `title` is omitted, a default will be created from the component source layer names. If `abstract` is omitted, it will be set to the same value as `title`.
 * `range` and `gamma` can be given either in the  `variable` element or inside the element for a colour component, with the latter taking precedence.
 * `source` (required) is the name of the NetCDF variable from which data is taken to determine the value of a particular colour channel.
 * `range` (optional) is the range of valid data values in the source variable; values outside this range are treated as missing. If omitted, `range` defaults to `0 255`.
